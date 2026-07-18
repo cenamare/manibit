@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Risultati PW</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --prugna:#7a3b6b;--prugd:#5c2b50;--tint:#f4eaf1;--navy:#0b3c49;--ink:#20222a;--mut:#6a7570;--hair:#e2e2db;--bg:#f5f6f3;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;}
+  .wrap{max-width:1040px;margin:0 auto;padding:22px 20px 60px;}
+  h1{font-family:var(--serif);color:var(--prugd);font-size:2rem;margin:0 0 .1em;}
+  .sub{color:var(--mut);font-style:italic;font-family:var(--serif);font-size:1.15rem;margin-bottom:1.4em;}
+  .card{background:#fff;border:1px solid var(--hair);border-radius:16px;padding:18px 20px;margin-bottom:18px;}
+  .lab{font-family:var(--mono);font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--prugna);font-weight:700;margin-bottom:.7em;}
+  .drop{border:2px dashed #c9b6c4;border-radius:14px;padding:34px;text-align:center;color:var(--mut);cursor:pointer;transition:.2s;}
+  .drop.over{background:var(--tint);border-color:var(--prugna);color:var(--prugd);}
+  .drop b{color:var(--prugd);}
+  button{font-family:var(--sans);cursor:pointer;border:1px solid var(--hair);background:#fff;border-radius:9px;padding:9px 15px;font-size:.95rem;color:var(--ink);}
+  button.go{background:var(--prugna);color:#fff;border-color:var(--prugna);font-weight:600;font-size:1.05rem;padding:11px 22px;}
+  button:hover{filter:brightness(.97)}
+  .maprow{display:flex;flex-wrap:wrap;gap:24px;margin:.5em 0 1em;}
+  .mapcol{flex:1 1 300px;}
+  select{font-family:var(--sans);font-size:1rem;padding:9px 11px;border:1px solid var(--hair);border-radius:9px;width:100%;}
+  .checks{display:flex;flex-direction:column;gap:6px;max-height:230px;overflow:auto;border:1px solid var(--hair);border-radius:9px;padding:10px;}
+  .checks label{display:flex;gap:9px;align-items:center;font-size:.95rem;}
+  table{border-collapse:collapse;width:100%;font-size:.97rem;}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--hair);}
+  th{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);}
+  td.num,th.num{text-align:right;font-family:var(--mono);}
+  tr.top td{background:#fbf3f8;}
+  .rank{font-family:var(--mono);font-weight:700;color:var(--prugna);}
+  .big{font-family:var(--mono);font-weight:700;font-size:1.15rem;color:var(--navy);}
+  td.code{font-family:var(--mono);font-weight:700;font-size:.92rem;color:var(--mut);}
+  td.ttl{font-size:1.02rem;font-weight:600;color:var(--ink);}
+  .fail{color:#c0392b !important;}
+  .hide{display:none;}
+  .hint{font-size:.85rem;color:var(--mut);margin-top:.5em;}
+  .barwrap{position:relative;height:auto;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Risultati Project Work</h1>
+  <div class="sub">Medie, classifica e grafici dai voti del form &mdash; a fine sessione</div>
+
+  <div class="card">
+    <div class="lab">1 &middot; Carica il file del form</div>
+    <div class="drop" id="drop">Trascina qui il file <b>Excel</b> (.xlsx) o <b>CSV</b> esportato dal Form<br><span class="hint">&mdash; oppure clicca per sceglierlo &mdash;</span></div>
+    <input type="file" id="file" accept=".xlsx,.xls,.csv" class="hide">
+    <div class="hint" id="fileinfo"></div>
+  </div>
+
+  <div class="card hide" id="mapcard">
+    <div class="lab">2 &middot; Indica le colonne</div>
+    <div class="maprow">
+      <div class="mapcol">
+        <div style="font-weight:600;margin-bottom:.4em;">Colonna con il <b>codice della presentazione</b></div>
+        <select id="nameSel"></select>
+        <div style="font-weight:600;margin:1em 0 .4em;">Colonna del <b>titolo del progetto</b> (facoltativa)</div>
+        <select id="titleSel"></select>
+        <div style="font-weight:600;margin:1em 0 .4em;">Colonna di <b>chi ha scritto il feedback</b> (facoltativa)</div>
+        <select id="authorSel"></select>
+      </div>
+      <div class="mapcol">
+        <div style="font-weight:600;margin-bottom:.4em;">Colonne dei <b>voti</b> da mediare</div>
+        <div class="checks" id="scoreChecks"></div>
+      </div>
+    </div>
+    <button class="go" onclick="compute()">Calcola la classifica</button>
+  </div>
+
+  <div class="card hide" id="resultcard">
+    <div class="lab" style="display:flex;justify-content:space-between;">
+      <span>3 &middot; Classifica</span>
+      <button onclick="copyTable(this)" style="font-family:var(--sans);font-size:.8rem;padding:6px 12px;">copia tabella</button>
+    </div>
+    <div style="overflow-x:auto;"><table id="tbl"></table></div>
+    <div class="hint" id="notecount"></div>
+  </div>
+
+  <div class="card hide" id="fbcard">
+    <div class="lab" style="display:flex;justify-content:space-between;">
+      <span>4 &middot; Classifica dei feedback dati</span>
+      <button onclick="copyFbTable(this)" style="font-family:var(--sans);font-size:.8rem;padding:6px 12px;">copia tabella</button>
+    </div>
+    <div style="overflow-x:auto;"><table id="fbtbl"></table></div>
+  </div>
+</div>
+
+<script>
+let HEADERS=[], ROWS=[], lastTable='';
+const LS='pwrisultati_';
+const drop=document.getElementById('drop'), fileInput=document.getElementById('file');
+drop.onclick=()=>fileInput.click();
+['dragover','dragenter'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('over');}));
+['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove('over');}));
+drop.addEventListener('drop',ev=>{if(ev.dataTransfer.files.length)handleFile(ev.dataTransfer.files[0]);});
+fileInput.addEventListener('change',ev=>{if(ev.target.files.length)handleFile(ev.target.files[0]);});
+
+function handleFile(f){
+  const r=new FileReader();
+  r.onload=e=>{
+    const wb=XLSX.read(e.target.result,{type:'array'});
+    const ws=wb.Sheets[wb.SheetNames[0]];
+    const arr=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+    HEADERS=(arr[0]||[]).map(h=>String(h).trim());
+    ROWS=arr.slice(1).filter(r=>r.some(c=>String(c).trim()!==''));
+    document.getElementById('fileinfo').textContent=f.name+' — '+ROWS.length+' risposte, '+HEADERS.length+' colonne';
+    buildMapping();
+  };
+  r.readAsArrayBuffer(f);
+}
+
+function colNumericRatio(ci){
+  let n=0,tot=0;
+  for(const row of ROWS){const v=String(row[ci]).trim();if(v===''){continue;}tot++;const num=parseFloat(v.replace(',','.'));if(!isNaN(num))n++;}
+  return tot?n/tot:0;
+}
+function colAvg(ci){let s=0,n=0;for(const row of ROWS){const num=parseFloat(String(row[ci]).replace(',','.'));if(!isNaN(num)){s+=num;n++;}}return n?s/n:0;}
+
+function buildMapping(){
+  const nameSel=document.getElementById('nameSel');nameSel.innerHTML='';
+  HEADERS.forEach((h,i)=>{const o=document.createElement('option');o.value=i;o.textContent=h||('col '+(i+1));nameSel.appendChild(o);});
+  // guess grouping column: prefer "codice"
+  let guess=HEADERS.findIndex(h=>/^codice/i.test(h));
+  if(guess<0)guess=HEADERS.findIndex(h=>/valut|chi stai|studente|presenta|nome del/i.test(h));
+  if(guess<0)guess=HEADERS.findIndex(h=>/nome/i.test(h)&&colNumericRatio(HEADERS.indexOf(h))<0.3);
+  const saved=JSON.parse(localStorage.getItem(LS+'map')||'null');
+  nameSel.value=(saved&&saved.name<HEADERS.length)?saved.name:(guess>=0?guess:0);
+  // title column select
+  const titleSel=document.getElementById('titleSel');titleSel.innerHTML='';
+  const none=document.createElement('option');none.value=-1;none.textContent='— nessuna —';titleSel.appendChild(none);
+  HEADERS.forEach((h,i)=>{const o=document.createElement('option');o.value=i;o.textContent=h||('col '+(i+1));titleSel.appendChild(o);});
+  let tguess=HEADERS.findIndex(h=>/titolo/i.test(h));
+  titleSel.value=(saved&&typeof saved.title!=='undefined'&&saved.title<HEADERS.length)?saved.title:(tguess>=0?tguess:-1);
+  // author column select
+  const authorSel=document.getElementById('authorSel');authorSel.innerHTML='';
+  const anone=document.createElement('option');anone.value=-1;anone.textContent='— nessuna —';authorSel.appendChild(anone);
+  HEADERS.forEach((h,i)=>{const o=document.createElement('option');o.value=i;o.textContent=h||('col '+(i+1));authorSel.appendChild(o);});
+  let aguess=HEADERS.findIndex(h=>/a cura di|chi scrive|autore|feedback a cura/i.test(h));
+  authorSel.value=(saved&&typeof saved.author!=='undefined'&&saved.author<HEADERS.length)?saved.author:(aguess>=0?aguess:-1);
+  // score columns: numeric, small range
+  const box=document.getElementById('scoreChecks');box.innerHTML='';
+  HEADERS.forEach((h,i)=>{
+    const ratio=colNumericRatio(i), avg=colAvg(i);
+    const looksScore=ratio>0.6 && avg>0 && avg<=10;
+    const checked=saved?saved.scores.includes(i):(looksScore&&i!=nameSel.value);
+    const lab=document.createElement('label');
+    lab.innerHTML='<input type="checkbox" value="'+i+'" '+(checked?'checked':'')+'> '+(h||('col '+(i+1)))+' <span style="color:var(--mut);font-size:.8rem">'+(ratio>0.6?'(numerica)':'')+'</span>';
+    box.appendChild(lab);
+  });
+  document.getElementById('mapcard').classList.remove('hide');
+}
+
+let chart=null;
+function critLabel(h){
+  h=String(h);
+  if(/situazione/i.test(h))return 'Situazione attuale';
+  if(/tecnica/i.test(h))return 'Fatt. tecnica';
+  if(/organizzativa/i.test(h))return 'Fatt. organizzativa';
+  if(/economica/i.test(h))return 'Fatt. economica / KPI';
+  if(/comunicazione/i.test(h))return 'Comunicazione';
+  const m=h.split(/max\)\.?/i);
+  let t=(m.length>1?m[m.length-1]:h).trim();
+  t=t.split(/[:?\n]/)[0].trim();
+  return t.length>26?t.slice(0,25)+'…':(t||h.slice(0,20));
+}
+function norm(s){return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ').trim();}
+function consensusTitle(list){
+  const clean=list.map(t=>String(t).trim()).filter(t=>t.length>1);
+  if(!clean.length)return '';
+  const groups={};
+  clean.forEach(t=>{const k=norm(t);if(!k)return;(groups[k]=groups[k]||[]).push(t);});
+  let bestK=null,bestN=0;
+  for(const k in groups){if(groups[k].length>bestN||(groups[k].length===bestN&&k.length>(bestK||'').length)){bestK=k;bestN=groups[k].length;}}
+  if(!bestK)return clean[0];
+  const g=groups[bestK], freq={};
+  g.forEach(t=>freq[t]=(freq[t]||0)+1);
+  let best=g[0];for(const t in freq){if(freq[t]>freq[best]||(freq[t]===freq[best]&&/^[A-Z]/.test(t)&&!/^[A-Z]/.test(best)))best=t;}
+  return best;
+}
+function compute(){
+  const nameCi=+document.getElementById('nameSel').value;
+  const titleCi=+document.getElementById('titleSel').value;
+  const authorCi=+document.getElementById('authorSel').value;
+  const scoreCis=[...document.querySelectorAll('#scoreChecks input:checked')].map(c=>+c.value);
+  if(!scoreCis.length){alert('Seleziona almeno una colonna di voti.');return;}
+  localStorage.setItem(LS+'map',JSON.stringify({name:nameCi,title:titleCi,author:authorCi,scores:scoreCis}));
+  const agg={};
+  for(const row of ROWS){
+    const name=String(row[nameCi]).trim();if(!name)continue;
+    if(!agg[name])agg[name]={n:0,sum:scoreCis.map(()=>0),cnt:scoreCis.map(()=>0),titles:[]};
+    let any=false;
+    scoreCis.forEach((ci,k)=>{const v=parseFloat(String(row[ci]).replace(',','.'));if(!isNaN(v)){agg[name].sum[k]+=v;agg[name].cnt[k]++;any=true;}});
+    if(any)agg[name].n++;
+    if(titleCi>=0&&row[titleCi])agg[name].titles.push(row[titleCi]);
+  }
+  const rows=Object.entries(agg).map(([name,d])=>{
+    const crit=d.sum.map((s,k)=>d.cnt[k]?s/d.cnt[k]:0);
+    const overall=crit.reduce((a,b)=>a+b,0)/crit.length/5*100;
+    return {name,n:d.n,crit,overall,title:consensusTitle(d.titles)};
+  }).sort((a,b)=>b.overall-a.overall);
+  sortKey='overall';sortDir=-1;
+  renderTable(rows,scoreCis);
+  document.getElementById('resultcard').classList.remove('hide');
+  document.getElementById('notecount').textContent=rows.reduce((a,r)=>a+r.n,0)+' voti totali su '+rows.length+' presentazioni.';
+  if(authorCi>=0){computeFeedback(authorCi,scoreCis);}else{document.getElementById('fbcard').classList.add('hide');}
+  document.getElementById('resultcard').scrollIntoView({behavior:'smooth'});
+}
+
+/* ---- feedback givers ranking ---- */
+let lastFbTable='';
+function computeFeedback(authorCi,scoreCis){
+  // text columns: guess by header keywords, else long non-numeric columns
+  let textCis=HEADERS.map((h,i)=>i).filter(i=>/migliorerei|rubo|note|feedback libero/i.test(HEADERS[i]||''));
+  if(!textCis.length){
+    textCis=HEADERS.map((h,i)=>i).filter(i=>{
+      if(i===authorCi||scoreCis.includes(i))return false;
+      if(colNumericRatio(i)>0.4)return false;
+      let tot=0,n=0;for(const r of ROWS){const v=String(r[i]||'').trim();if(v){tot+=v.length;n++;}}
+      return n>3&&tot/Math.max(1,n)>15;
+    });
+  }
+  const key=s=>norm(s).split(' ').filter(Boolean).sort().join(' ');
+  const agg={};
+  for(const row of ROWS){
+    const raw=String(row[authorCi]||'').trim();
+    if(raw.length<2)continue;
+    const k=key(raw);if(!k)continue;
+    if(!agg[k])agg[k]={variants:[],n:0,chars:0,rich:0};
+    agg[k].variants.push(raw);
+    const hasVote=scoreCis.some(ci=>!isNaN(parseFloat(String(row[ci]).replace(',','.'))));
+    let tlen=0;textCis.forEach(ci=>{tlen+=Math.min(300,String(row[ci]||'').trim().length);});
+    if(hasVote||tlen>0){agg[k].n++;agg[k].chars+=tlen;agg[k].rich+=Math.min(1,tlen/180);}
+  }
+  // fuzzy-merge near-identical names (typos): edit distance on normalized keys
+  const keys=Object.keys(agg).sort((a,b)=>agg[b].variants.length-agg[a].variants.length);
+  const merged={};
+  for(const k of keys){
+    let target=null;
+    for(const mk in merged){
+      const tol=Math.max(2,Math.floor(Math.min(mk.length,k.length)*0.25));
+      if(editDist(k,mk)<=tol){target=mk;break;}
+    }
+    if(target){
+      const a=merged[target],b=agg[k];
+      a.variants=a.variants.concat(b.variants);a.n+=b.n;a.chars+=b.chars;a.rich+=b.rich;
+    }else merged[k]=agg[k];
+  }
+  const maxN=Math.max(1,...Object.values(merged).map(d=>d.n));
+  const rows=Object.values(merged).map(d=>{
+    const cov=d.n/maxN, rich=d.n?d.rich/d.n:0;
+    const score=Math.round((0.35*cov+0.65*rich)*5);
+    return {name:consensusTitle(d.variants),n:d.n,avgChars:d.n?Math.round(d.chars/d.n):0,score};
+  }).sort((a,b)=>b.score-a.score||b.n-a.n);
+  let h='<tr><th>#</th><th>Studente</th><th class="num">Feedback dati</th><th class="num">Testo medio</th><th class="num">Punteggio /5</th></tr>';
+  rows.forEach((r,i)=>{
+    h+='<tr class="'+(i<3?'top':'')+'"><td class="rank">'+(i+1)+'</td><td class="ttl">'+esc(r.name)+'</td><td class="num">'+r.n+'</td><td class="num">'+r.avgChars+' car.</td><td class="num big">'+r.score+'</td></tr>';
+  });
+  document.getElementById('fbtbl').innerHTML=h;
+  lastFbTable=['#','Studente','Feedback dati','Testo medio (caratteri)','Punteggio /5'].join('\t')+'\n'
+    +rows.map((r,i)=>[i+1,r.name,r.n,r.avgChars,r.score].join('\t')).join('\n');
+  document.getElementById('fbcard').classList.remove('hide');
+}
+function editDist(a,b){
+  const m=a.length,n=b.length;
+  if(Math.abs(m-n)>6)return 99;
+  const d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);
+  for(let j=1;j<=n;j++)d[0][j]=j;
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+    d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return d[m][n];
+}
+function copyFbTable(btn){
+  if(!lastFbTable)return;
+  const done=()=>{const o=btn.textContent;btn.textContent='✓ copiato';setTimeout(()=>btn.textContent=o,1300);};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(lastFbTable).then(done,()=>fbcopy(lastFbTable,done));else fbcopy(lastFbTable,done);
+}
+
+function fmt(x){return x.toFixed(2).replace('.',',');}
+let lastRows=[], lastScoreCis=[], sortKey='overall', sortDir=-1;
+function sortBy(key){
+  if(sortKey===key)sortDir=-sortDir; else {sortKey=key;sortDir=-1;}
+  renderTable(lastRows,lastScoreCis);
+}
+function sortVal(r,key){
+  if(key==='overall')return r.overall;
+  if(key==='n')return r.n;
+  return r.crit[+key.slice(1)]||0;
+}
+function renderTable(rows,scoreCis){
+  lastRows=rows;lastScoreCis=scoreCis;
+  const sorted=rows.slice().sort((a,b)=>(sortVal(b,sortKey)-sortVal(a,sortKey))*(sortDir===-1?1:-1)||b.overall-a.overall);
+  const heads=scoreCis.map(ci=>critLabel(HEADERS[ci]||('col'+ci)));
+  const hasTitle=rows.some(r=>r.title);
+  const arr=k=>sortKey===k?(sortDir===-1?' &#9660;':' &#9650;'):'';
+  const thStyle='cursor:pointer;user-select:none;';
+  let h='<tr><th>#</th><th>Codice</th>'+(hasTitle?'<th>Titolo</th>':'')
+    +'<th class="num" style="'+thStyle+'" onclick="sortBy(\'n\')">Voti'+arr('n')+'</th>'
+    +'<th class="num" style="'+thStyle+'" onclick="sortBy(\'overall\')">Punteggio /100'+arr('overall')+'</th>'
+    +heads.map((x,k)=>'<th class="num" style="'+thStyle+'" onclick="sortBy(\'c'+k+'\')">'+esc(x)+' <span style="font-weight:400">(/5)</span>'+arr('c'+k)+'</th>').join('')+'</tr>';
+  sorted.forEach((r,i)=>{
+    const sc=Math.round(r.overall);
+    h+='<tr class="'+(i<3?'top':'')+'"><td class="rank">'+(i+1)+'</td><td class="code">'+esc(r.name)+'</td>'+(hasTitle?'<td class="ttl">'+esc(r.title)+'</td>':'')+'<td class="num">'+r.n+'</td><td class="num big'+(sc<60?' fail':'')+'">'+sc+'</td>'+r.crit.map((c,k)=>'<td class="num'+(c<3?' fail':'')+(sortKey==='c'+k?' big':'')+'">'+fmt(c)+'</td>').join('')+'</tr>';
+  });
+  document.getElementById('tbl').innerHTML=h;
+  // build TSV for copy (follows current sort)
+  lastTable=['#','Codice',...(hasTitle?['Titolo']:[]),'Voti','Punteggio /100',...heads.map(x=>x+' (/5)')].join('\t')+'\n'+sorted.map((r,i)=>[i+1,r.name,...(hasTitle?[r.title]:[]),r.n,Math.round(r.overall),...r.crit.map(fmt)].join('\t')).join('\n');
+}
+function esc(s){return String(s).replace(/</g,'&lt;');}
+function copyTable(btn){
+  if(!lastTable)return;
+  const done=()=>{const o=btn.textContent;btn.textContent='✓ copiato';setTimeout(()=>btn.textContent=o,1300);};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(lastTable).then(done,()=>fbcopy(lastTable,done));else fbcopy(lastTable,done);
+}
+function fbcopy(t,d){const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(a);d&&d();}
+</script>
+</body>
+</html>
