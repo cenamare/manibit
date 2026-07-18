@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tabellone PW</title>
+<style>
+  :root{
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --navy:#0b3c49; --ink:#1b241c; --mut:#6a7570; --hair:#e2e2db; --bg:#f5f6f3;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);}
+  .wrap{max-width:1320px;margin:0 auto;padding:16px 18px 40px;}
+  button{font-family:var(--sans);cursor:pointer;border:1px solid var(--hair);background:#fff;border-radius:9px;padding:8px 12px;font-size:.95rem;color:var(--ink);}
+  button:hover{border-color:var(--navy);}
+  button:active{transform:translateY(1px);}
+  .card{background:#fff;border:1px solid var(--hair);border-radius:16px;padding:16px;}
+  .h{font-family:var(--serif);font-weight:700;font-size:1.5rem;color:var(--navy);margin:0 0 12px;display:flex;justify-content:space-between;align-items:center;}
+  .h .mini{font-family:var(--sans);}
+  .mini{font-size:.8rem;padding:6px 10px;background:#f3f4f1;font-weight:400;}
+  .hbtns{display:flex;gap:6px;}
+  /* timer */
+  #timerCard{text-align:center;transition:background .3s,border-color .3s;border-width:3px;display:flex;flex-direction:column;justify-content:center;gap:26px;padding:24px;}
+  #clock{font-family:var(--mono);font-weight:700;font-size:7.8rem;line-height:1;color:var(--navy);letter-spacing:.02em;margin:0;}
+  .trow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center;}
+  .big{font-size:1.05rem;padding:11px 17px;font-weight:600;}
+  #goBtn{font-size:1.3rem;padding:15px 30px;}
+  .go{background:#0b6b63;color:#fff;border-color:#0b6b63;}
+  .dur{font-size:1rem;color:var(--mut);display:inline-flex;align-items:center;gap:6px;}
+  .dur input{width:3.6ch;font-family:var(--mono);font-size:1.15rem;padding:6px 6px;border:1px solid var(--hair);border-radius:7px;text-align:center;}
+  .t-green{background:#eef7ef;border-color:#3fa34d;} .t-green #clock{color:#2e7d32;}
+  .t-amber{background:#fff6e6;border-color:#e8a33d;} .t-amber #clock{color:#8a5a00;}
+  .t-red{background:#fdecea;border-color:#d64541;} .t-red #clock{color:#c0392b;}
+  /* two columns */
+  .grid4{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch;}
+  @media(max-width:900px){.grid4{grid-template-columns:1fr;}}
+  /* scoreboard */
+  .banco{display:flex;align-items:center;gap:14px;padding:13px 8px;border-bottom:1px solid var(--hair);}
+  .banco:last-child{border-bottom:0;}
+  .dot{width:16px;height:46px;border-radius:5px;flex:0 0 auto;}
+  .bname{font-family:var(--serif);font-weight:700;font-size:1.5rem;outline:none;flex:1 1 auto;min-width:60px;}
+  .score{font-family:var(--mono);font-weight:700;font-size:2.9rem;min-width:2.2ch;text-align:right;color:var(--navy);line-height:1;}
+  .sbtn{display:flex;gap:6px;}
+  .sbtn button{padding:10px 13px;font-weight:700;font-size:1rem;}
+  .p1{color:#0b6b63;} .p2{color:#1c6e8c;} .p3{color:#7a3b6b;} .mn{color:var(--mut);}
+  .leader{background:#fbf7ef;border-radius:10px;}
+  /* lists */
+  .addform{display:flex;gap:8px;margin-bottom:11px;flex-wrap:wrap;align-items:center;}
+  .addform input.txt{flex:1 1 220px;padding:13px 15px;border:1px solid var(--hair);border-radius:9px;font-size:1.15rem;font-family:var(--sans);}
+  .pick{display:flex;gap:6px;}
+  .pk{width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--hair);cursor:pointer;}
+  .pk.sel{box-shadow:0 0 0 3px var(--navy);}
+  ul.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;max-height:520px;overflow:auto;}
+  ul.list li{display:flex;align-items:center;gap:12px;background:#fafbf9;border:1px solid var(--hair);border-radius:11px;padding:13px 15px;line-height:1.35;}
+  #ideas li{font-size:1.4rem;}
+  #tips li{font-size:1.12rem;}
+  .idot{width:15px;height:15px;border-radius:50%;flex:0 0 auto;}
+  .x{margin-left:auto;border:0;background:none;color:#c0392b;font-size:1.3rem;padding:0 6px;cursor:pointer;}
+  .brandbar{display:flex;align-items:center;gap:24px;margin-top:24px;padding-top:16px;border-top:1px solid var(--hair);flex-wrap:wrap;}
+  .brandbar img{height:42px;width:auto;display:block;}
+  .brandbar a,.brandbar .labname{font-family:var(--sans);font-size:1rem;color:var(--mut);letter-spacing:.03em;text-decoration:none;}
+  .brandbar a:hover{color:var(--navy);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="grid4">
+
+    <!-- ALTO SINISTRA: TEMPO -->
+    <div class="card t-green" id="timerCard">
+      <div id="clock">08:00</div>
+      <div class="trow">
+        <label class="dur">Minuti <input id="durP" type="number" min="1" max="30" value="8"></label>
+        <button class="big go" id="goBtn" onclick="toggle()">Avvia / Pausa</button>
+        <button class="big" onclick="addSec(60)">+1:00</button>
+        <button class="big" onclick="addSec(-60)">&minus;1:00</button>
+        <button class="big" onclick="resetTimer()">Azzera</button>
+      </div>
+    </div>
+
+    <!-- ALTO DESTRA: PUNTI -->
+    <div class="card">
+      <div class="h">Punti dei team <button class="mini" onclick="resetScores()">azzera</button></div>
+      <div id="board"></div>
+    </div>
+
+    <!-- BASSO SINISTRA: IDEE RUBATE -->
+    <div class="card">
+      <div class="h">Idee rubate <span class="hbtns"><button class="mini" onclick="copyIdeas(this)">copia</button><button class="mini" onclick="resetIdeas()">svuota</button></span></div>
+      <form class="addform" onsubmit="addIdea(event)">
+        <input class="txt" id="ideaInput" placeholder="Un'idea che rubo per il mio PW&hellip;" autocomplete="off">
+        <button class="big go" type="submit">Aggiungi</button>
+      </form>
+      <ul class="list" id="ideas"></ul>
+    </div>
+
+    <!-- BASSO DESTRA: COMMENTI & DOMANDE -->
+    <div class="card">
+      <div class="h">Commenti &amp; domande <span class="hbtns"><button class="mini" onclick="copyTips(this)">copia</button><button class="mini" onclick="resetTips()">svuota</button></span></div>
+      <form class="addform" onsubmit="addTip(event)">
+        <input class="txt" id="tipInput" placeholder="Commento o domanda brillante&hellip;" autocomplete="off">
+        <div class="pick" id="tipPick"></div>
+        <button class="big go" type="submit">Aggiungi</button>
+      </form>
+      <ul class="list" id="tips"></ul>
+    </div>
+
+  </div>
+
+  <div class="brandbar">
+    <a href="https://www.manibit.it" target="_blank" rel="noopener"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjJiIrkcHFWxIMhN3CXymUkdbo9Ctwy2KANZibqS14GlTXl_JS_a5LhNFJdY-cPpq515tFRnyGS2zwIHTyIVwoLvjJUEUpiFlhEAJnCpjVjgdYZ79AjHg71zDU9iNKrjThxOw95gftQ3hhgsYioL3p3pyg6pFwUT41VULZT3sfqh2ZtQ3877JTpz_dQGxk/w320-h147-rw/manibit-logo-oriz.png" alt="manibit"></a>
+    <span class="labname">WORKSHOP 4.0</span>
+    <span class="labname">APP LAB</span>
+    <span class="labname">FLOW LAB</span>
+    <span class="labname">PROJECT WORK</span>
+  </div>
+
+</div>
+
+<script>
+const TEAMS=[["Financial Team","#b9791c"],["Technical Experts","#1c6e8c"],["Communication Group","#7a3b6b"],["Organizational Team","#0b6b63"]];
+const LS=k=>'pwregia2_'+k;
+let state={
+  scores:JSON.parse(localStorage.getItem(LS('scores'))||'[0,0,0,0]'),
+  names:JSON.parse(localStorage.getItem(LS('names'))||JSON.stringify(TEAMS.map(t=>t[0]))),
+  ideas:JSON.parse(localStorage.getItem(LS('ideas'))||'[]'),
+  tips:JSON.parse(localStorage.getItem(LS('tips'))||'[]'),
+  durP:+(localStorage.getItem(LS('durP'))||8),
+  pick:0
+};
+function save(){
+  localStorage.setItem(LS('scores'),JSON.stringify(state.scores));
+  localStorage.setItem(LS('names'),JSON.stringify(state.names));
+  localStorage.setItem(LS('ideas'),JSON.stringify(state.ideas));
+  localStorage.setItem(LS('tips'),JSON.stringify(state.tips));
+  localStorage.setItem(LS('durP'),state.durP);
+}
+
+/* TIMER */
+let remaining=state.durP*60, running=false, tick=null;
+function fmt(s){s=Math.max(0,s);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function readDur(){const v=parseInt(document.getElementById('durP').value,10);return (isNaN(v)||v<1)?8:v;}
+function renderTimer(){
+  document.getElementById('clock').textContent=fmt(remaining);
+  const c=document.getElementById('timerCard');
+  c.classList.remove('t-green','t-amber','t-red');
+  c.classList.add(remaining<=0?'t-red':remaining<=120?'t-amber':'t-green');
+  document.getElementById('goBtn').textContent=running?'Pausa':'Avvia';
+}
+function toggle(){running=!running;if(running){ensureAudio();tick=setInterval(()=>{remaining--;if(remaining===60){warnBeep();}if(remaining<=0){remaining=0;running=false;clearInterval(tick);endGong();}renderTimer();},1000);}else{clearInterval(tick);}renderTimer();}
+function preset(s){remaining=s;running=false;clearInterval(tick);renderTimer();}
+function addSec(s){remaining=Math.max(0,remaining+s);renderTimer();}
+function resetTimer(){preset(readDur()*60);}
+/* ---- audio: avviso a 1 minuto (beep singolo) e fine tempo (gong triplo, forte) ---- */
+let AC=null;
+function ensureAudio(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();}catch(e){}}
+function tone(freq,start,dur,vol){
+  const o=AC.createOscillator(),g=AC.createGain();
+  o.type='sine';o.frequency.value=freq;o.connect(g);g.connect(AC.destination);
+  const t=AC.currentTime+start;
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.exponentialRampToValueAtTime(vol,t+0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.start(t);o.stop(t+dur+0.05);
+}
+function warnBeep(){ensureAudio();if(!AC)return;tone(880,0,0.5,0.5);}
+function endGong(){ensureAudio();if(!AC)return;
+  // tre rintocchi lunghi, con doppia ottava per farsi sentire in tutta l'aula
+  [0,1.1,2.2].forEach(s=>{tone(523,s,1.0,0.85);tone(1046,s,1.0,0.45);tone(659,s+0.05,0.95,0.55);});
+}
+
+/* SCOREBOARD */
+function renderBoard(){
+  const max=Math.max(...state.scores);
+  const b=document.getElementById('board');b.innerHTML='';
+  TEAMS.forEach((tk,i)=>{
+    const lead=state.scores[i]===max&&max>0;
+    const row=document.createElement('div');row.className='banco'+(lead?' leader':'');
+    row.innerHTML=`<div class="dot" style="background:${tk[1]}"></div>
+      <div class="bname" contenteditable="true" data-i="${i}">${state.names[i]}</div>
+      <div class="score">${state.scores[i]}</div>
+      <div class="sbtn">
+        <button class="p1" onclick="pt(${i},1)">+1</button>
+        <button class="p2" onclick="pt(${i},2)">+2</button>
+        <button class="p3" onclick="pt(${i},3)">+3</button>
+        <button class="mn" onclick="pt(${i},-1)">&minus;</button>
+      </div>`;
+    b.appendChild(row);
+  });
+  document.querySelectorAll('.bname').forEach(el=>el.addEventListener('blur',()=>{state.names[+el.dataset.i]=el.textContent.trim()||TEAMS[+el.dataset.i][0];save();}));
+}
+function pt(i,d){state.scores[i]=Math.max(0,state.scores[i]+d);save();renderBoard();}
+function resetScores(){if(confirm('Azzerare tutti i punti?')){state.scores=[0,0,0,0];save();renderBoard();}}
+
+/* IDEE (left, no color) */
+function renderIdeas(){
+  const u=document.getElementById('ideas');u.innerHTML='';
+  state.ideas.slice().reverse().forEach((t,ri)=>{
+    const idx=state.ideas.length-1-ri;
+    const li=document.createElement('li');
+    li.innerHTML=`<span>${t.replace(/</g,'&lt;')}</span><button class="x" title="elimina">&times;</button>`;
+    li.querySelector('.x').onclick=()=>{state.ideas.splice(idx,1);save();renderIdeas();};
+    u.appendChild(li);
+  });
+}
+function addIdea(e){e.preventDefault();const inp=document.getElementById('ideaInput');const t=inp.value.trim();if(!t)return;state.ideas.push(t);inp.value='';save();renderIdeas();}
+function resetIdeas(){if(confirm('Svuotare le idee rubate? (ricordati di premere “copia” prima)')){state.ideas=[];save();renderIdeas();}}
+function copyText(txt,btn){
+  const ok=()=>{if(btn){const o=btn.textContent;btn.textContent='✓ copiato';setTimeout(()=>btn.textContent=o,1300);}};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,()=>fb(txt,ok));}else fb(txt,ok);
+}
+function fb(txt,ok){const t=document.createElement('textarea');t.value=txt;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(t);ok&&ok();}
+function copyIdeas(btn){if(!state.ideas.length){return;}copyText(state.ideas.join('\n'),btn);}
+function copyTips(btn){if(!state.tips.length){return;}copyText(state.tips.map(it=>TEAMS[it.c][0]+'\t'+it.t).join('\n'),btn);}
+
+/* COMMENTI & DOMANDE (right, 4 colors) */
+function renderPick(){const p=document.getElementById('tipPick');p.innerHTML='';TEAMS.forEach((tk,i)=>{const d=document.createElement('div');d.className='pk'+(state.pick===i?' sel':'');d.style.background=tk[1];d.title=tk[0];d.onclick=()=>{state.pick=i;renderPick();};p.appendChild(d);});}
+function renderTips(){
+  const u=document.getElementById('tips');u.innerHTML='';
+  state.tips.slice().reverse().forEach((it,ri)=>{
+    const idx=state.tips.length-1-ri;
+    const li=document.createElement('li');
+    li.innerHTML=`<span class="idot" style="background:${TEAMS[it.c][1]}"></span><span>${it.t.replace(/</g,'&lt;')}</span><button class="x" title="elimina">&times;</button>`;
+    li.querySelector('.x').onclick=()=>{state.tips.splice(idx,1);save();renderTips();};
+    u.appendChild(li);
+  });
+}
+function addTip(e){e.preventDefault();const inp=document.getElementById('tipInput');const t=inp.value.trim();if(!t)return;state.tips.push({t,c:state.pick});inp.value='';save();renderTips();}
+function resetTips(){if(confirm('Svuotare commenti e domande?')){state.tips=[];save();renderTips();}}
+
+/* keyboard: space = timer */
+document.addEventListener('keydown',e=>{
+  if(/INPUT|TEXTAREA/.test(e.target.tagName)||e.target.isContentEditable)return;
+  if(e.code==='Space'){e.preventDefault();toggle();}
+});
+
+/* init */
+document.getElementById('durP').value=state.durP;
+document.getElementById('durP').addEventListener('change',()=>{state.durP=readDur();save();if(!running){remaining=state.durP*60;renderTimer();}});
+renderTimer();renderBoard();renderPick();renderIdeas();renderTips();
+</script>
+</body>
+</html>
