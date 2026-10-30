@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Le 10 regole di Rushkoff · che cosa conta per noi</title>
+<style>
+  :root{--ink:#16161d;--mut:#6b6f7a;--line:#e4e4ec;--bg:#f7f7fb;
+    --f:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+    --m:ui-monospace,'SF Mono',Menlo,Consolas,monospace}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:var(--f);background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 22px;background:#fff;border-bottom:2px solid var(--line)}
+  .pill{font-family:var(--m);font-size:12px;font-weight:800;letter-spacing:.12em;background:#16133a;color:#fff;border-radius:999px;padding:5px 11px}
+  h1{font-size:24px;margin:0;letter-spacing:-.02em;font-weight:800}
+  .sp{flex:1}
+  button{font-family:var(--f);font-weight:800;font-size:15px;border:2px solid var(--line);border-bottom-width:5px;background:#fff;color:var(--ink);border-radius:14px;padding:8px 14px;cursor:pointer}
+  button:active{transform:translateY(2px);border-bottom-width:3px}
+  button.on{background:#16133a;border-color:#16133a;color:#fff}
+  button.go{background:#facc15;border-color:#d4a90c}
+  button.go.on{color:#16133a;border-color:#16133a}
+  .groups{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 22px 0}
+  .groups .lab{font-family:var(--m);font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--mut);margin-right:4px}
+  .g{min-width:118px;text-align:left;line-height:1.15}
+  .g small{display:block;font-weight:600;font-size:12px;opacity:.75}
+  .g.done:not(.on){border-color:#16a34a}
+  main{flex:1;padding:14px 22px 22px;overflow:auto}
+  .view{display:none}.view.show{display:block}
+  /* conteggio */
+  .row{display:grid;grid-template-columns:52px 260px 1fr 170px;align-items:center;gap:14px;background:#fff;border:2px solid var(--line);border-radius:16px;padding:5px 12px;margin-bottom:6px}
+  .num{width:40px;height:40px;border-radius:12px;color:#fff;font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center}
+  .tema{font-weight:800;font-size:21px;letter-spacing:-.01em;line-height:1.1}
+  .pair{font-size:13px;font-weight:700;margin-top:3px}
+  .track{height:30px;background:#f0f0f5;border-radius:10px;position:relative;overflow:hidden}
+  .bar{height:100%;border-radius:10px;width:0;transition:width .5s cubic-bezier(.2,.9,.3,1.2)}
+  .tot{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-weight:800;font-size:18px;background:#fff;border-radius:8px;padding:0 8px;line-height:24px;min-width:34px;text-align:center}
+  .ctl{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+  .ctl button{width:40px;height:40px;padding:0;font-size:22px;line-height:1}
+  .ctl .v{width:40px;text-align:center;font-weight:800;font-size:24px}
+  .hint{color:var(--mut);font-size:14px;margin:4px 0 10px}
+  .hidden .tot,.hidden .bar{visibility:hidden}
+  /* podio */
+  .podium{display:flex;align-items:flex-end;justify-content:center;gap:18px;margin:10px 0 26px;min-height:380px}
+  .step{width:300px;text-align:center;opacity:0;transform:translateY(30px);transition:all .6s ease}
+  .step.in{opacity:1;transform:none}
+  .step .card{background:#fff;border:3px solid;border-radius:20px;padding:16px 14px;margin-bottom:10px}
+  .step .card .n{font-size:15px;font-weight:800;font-family:var(--m);letter-spacing:.1em}
+  .step .card .t{font-size:32px;font-weight:800;letter-spacing:-.02em;margin:4px 0}
+  .step .card .p{font-size:15px;font-weight:700}
+  .step .card .d{font-size:14px;color:#3a3d48;line-height:1.4;margin-top:8px}
+  .block{border-radius:16px 16px 0 0;color:#fff;font-weight:900;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .block .pos{font-size:54px;line-height:1}
+  .block .pts{font-size:16px;font-weight:700;opacity:.9;margin-top:4px}
+  .rank{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+  .rk{background:#fff;border:2px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:700;font-size:16px}
+  .zero{text-align:center;margin-top:18px;font-size:20px;color:#3a3d48}
+  /* domanda */
+  .q{max-width:1100px;margin:14px auto;text-align:center}
+  .q .a{font-size:46px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+  .q .b{font-size:40px;font-weight:700;letter-spacing:-.02em;line-height:1.2;margin-top:40px;opacity:0;transition:opacity .6s}
+  .q .b.in{opacity:1}
+  .q .c{display:flex;gap:14px;justify-content:center;margin-top:44px;opacity:0;transition:opacity .6s}
+  .q .c.in{opacity:1}
+  /* undicesima */
+  .eleven{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+  .el{background:#fff;border:2px solid var(--line);border-bottom:6px solid #16133a;border-radius:18px;padding:14px 16px}
+  .el .h{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px;color:var(--mut)}
+  .el .h b{width:40px;height:40px;border-radius:12px;background:#16133a;color:#facc15;display:flex;align-items:center;justify-content:center;font-size:18px}
+  .el textarea{width:100%;border:0;resize:vertical;font-family:var(--f);font-size:24px;font-weight:700;line-height:1.3;color:var(--ink);background:transparent;min-height:96px;margin-top:8px;outline:none}
+  .el textarea::placeholder{color:#c4c6d0}
+  #v-podio,#v-domanda{min-height:72vh;cursor:pointer}
+  .q .c{opacity:0;transition:opacity .5s}.q .c.in{opacity:1}
+  .next{position:fixed;right:22px;bottom:22px;font-size:18px;padding:12px 20px;background:#facc15;border-color:#d4a90c;display:none}
+  .next.show{display:block}
+  .tip{text-align:center;color:var(--mut);font-size:16px;margin-top:10px;font-weight:600}
+  .strip{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+  .strip span{font-size:14px;font-weight:700;border-radius:999px;padding:3px 10px;background:#fff;border:2px solid var(--line)}
+  .el input{width:100%;border:0;border-bottom:2px dashed var(--line);font-family:var(--f);font-size:28px;font-weight:800;letter-spacing:-.02em;color:var(--ink);background:transparent;outline:none;padding:4px 0;margin-top:8px}
+  .el input::placeholder{color:#c4c6d0}
+  #qprev{display:flex;flex-direction:column;gap:6px;align-items:center;margin-bottom:26px}
+  .qp{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:600;color:#5b5e6b;background:#fff;border:2px solid var(--line);border-radius:14px;padding:6px 14px;max-width:100%;text-align:left}
+  .qp i{font-style:normal;flex:0 0 auto;font-size:13px;font-weight:800;color:#fff;border-radius:8px;padding:3px 8px;white-space:nowrap}
+  .qn{font-family:var(--m);font-size:14px;font-weight:800;letter-spacing:.14em;color:var(--mut);margin-bottom:22px}
+  .c .rule{display:inline-flex;align-items:center;gap:14px;background:#fff;border:3px solid;border-bottom-width:8px;border-radius:20px;padding:14px 22px;text-align:left}
+  .c .rule b{width:52px;height:52px;border-radius:14px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px}
+  .c .rule .tt{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+  .c .rule .pp{font-size:18px;font-weight:700}
+  .hcard{background:#fff;border:2px solid var(--line);border-bottom-width:6px;border-radius:18px;padding:14px 16px;margin-bottom:12px}
+  .hcard .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .hcard .top .when{font-weight:800;font-size:18px}
+  .hcard .top .sp{flex:1}
+  .hcard .top button{font-size:13px;padding:5px 10px}
+  .hcard ul{margin:8px 0 0;padding-left:20px}
+  .big{font-size:34px;font-weight:800;letter-spacing:-.02em;margin:6px 0 16px}
+  @media (max-width:760px){.row{grid-template-columns:44px 1fr 150px}.row .track{grid-column:1/-1;order:5}}
+</style>
+</head>
+<body>
+<header>
+  <span class="pill">cenaLab</span>
+  <h1>Le 10 regole di Rushkoff &middot; che cosa conta per noi</h1>
+  <span class="sp"></span>
+  <button data-v="conta" class="on">Conteggio</button>
+  <button data-v="podio" class="go">Il podio</button>
+  <button data-v="domanda">Le domande</button>
+  <button data-v="undici">L&rsquo;11&ordf; regola</button>
+  <button data-v="storico">Storico</button>
+</header>
+
+<div class="groups" id="groups"></div>
+
+<main>
+  <section class="view show" id="v-conta">
+    <div class="hint" id="hint"></div>
+    <div id="rows"></div>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+      <button id="hide">Nascondi le barre</button>
+      <button id="reset">Azzera tutto</button>
+    </div>
+  </section>
+
+  <section class="view" id="v-podio">
+    <div class="podium" id="podium"></div>
+    <div class="rank" id="rank"></div>
+    <div class="zero" id="zero"></div>
+    <div class="tip" id="ptip"></div>
+  </section>
+
+  <section class="view" id="v-domanda">
+    <div class="q">
+      <div id="qprev"></div>
+      <div class="qn" id="qn"></div>
+      <div class="a" id="qa"></div>
+      <div class="c" id="qc"></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-undici">
+    <div class="big">L&rsquo;undicesima regola <span style="font-size:20px;font-weight:600;color:var(--mut);letter-spacing:0">&middot; Rushkoff scriveva nel 2010. E oggi?</span></div>
+    <div class="strip" id="strip"></div>
+    <div class="eleven" id="eleven"></div>
+    <div style="margin-top:16px"><button id="save11">Salva nello storico</button></div>
+  </section>
+
+  <section class="view" id="v-storico">
+    <div class="big">Storico</div>
+    <div class="hint">Le sessioni salvate restano in questo browser. Per non perderle, scaricale ogni tanto.</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 16px">
+      <button id="saveH" class="go">Salva la sessione di oggi</button>
+      <button id="dlH">Scarica tutto (.txt)</button>
+      <button id="cpH">Copia tutto</button>
+    </div>
+    <div id="hist"></div>
+  </section>
+</main>
+<button class="next" id="prev" style="right:auto;left:22px;background:#fff;border-color:var(--line)">&larr; Indietro</button>
+<button class="next" id="next">Avanti &rarr;</button>
+<div id="toast" style="position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#16133a;color:#fff;font-weight:700;border-radius:14px;padding:10px 18px;display:none;z-index:9"></div>
+
+<script>
+const R=[
+ ["Tempo","Scelta","Fluire","Il digitale non conosce il tempo biologico, ma vive in un presente artificiale continuo.","#4f46e5"],
+ ["Spazio","Distanza","Luogo","La rete azzera le distanze fisiche, ma rischia di sradicarci dai contesti locali e reali.","#0891b2"],
+ ["Scelta","Discreta","Continua","Il codice è binario (Sì/No, 0/1). Riduce la complessità e le sfumature della realtà a scelte nette e polarizzate.","#16a34a"],
+ ["Complessità","Fatto","Simulazione","I modelli digitali semplificano il mondo reale. Confondere la simulazione con la realtà ci rende superficiali.","#a21caf"],
+ ["Scala","Rete","Individuo","Nel digitale, tutto si muove su scala globale. Un'azione locale può avere un impatto immenso, nel bene e nel male.","#2563eb"],
+ ["Identità","Anonimo","Pseudonimo","La rete frammenta l'identità o ci costringe a incasellarci in profili rigidi, riducendo l'empatia umana.","#db2777"],
+ ["Socialità","Contatto","Connessione","I social network valorizzano la connessione numerica (follower, like) a scapito del contatto umano profondo.","#0f766e"],
+ ["Fatto","Verità","Consenso","Nell'era digitale, una notizia non è rilevante perché è vera, ma perché circola e genera interazioni.","#7c3aed"],
+ ["Apertura","Condivisione","Proprietà","Le piattaforme commerciali tendono a chiudere e monetizzare gli spazi nati originariamente per essere aperti e collaborativi.","#dc2626"],
+ ["Scopo","Programma","Utente","Se non usi la tecnologia con uno scopo preciso e attivo, diventi tu stesso lo scopo (e il prodotto) del software.","#ea580c"]
+];
+const KEY="rushkoff-classifica-v1";
+let S={n:6,g:0,c:[],e:[],hide:false};
+function blank(){S.c=Array.from({length:12},()=>Array(10).fill(0));S.e=Array(12).fill("");S.t=Array(12).fill("");}
+blank();
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&s.c)S=Object.assign(S,s);}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const $=id=>document.getElementById(id);
+const tint=(h,t)=>{const n=parseInt(h.slice(1),16);const r=n>>16,g=n>>8&255,b=n&255;return"rgb("+[r,g,b].map(v=>Math.round(v+(255-v)*t)).join(",")+")";};
+const shade=(h,t)=>{const n=parseInt(h.slice(1),16);const r=n>>16,g=n>>8&255,b=n&255;return"rgb("+[r,g,b].map(v=>Math.round(v*(1-t))).join(",")+")";};
+const totals=()=>R.map((_,i)=>S.c.slice(0,S.n).reduce((a,g)=>a+g[i],0));
+const gsum=g=>S.c[g].reduce((a,b)=>a+b,0);
+
+function renderGroups(){
+  let h='<span class="lab">GRUPPO</span>';
+  for(let g=0;g<S.n;g++){const s=gsum(g);
+    h+='<button class="g'+(g===S.g?' on':'')+(s?' done':'')+'" data-g="'+g+'">Gruppo '+(g+1)+'<small>'+s+' bollini</small></button>';}
+  h+='<button id="gm" title="un gruppo in meno">&minus;</button><button id="gp" title="un gruppo in pi&ugrave;">+</button>';
+  $("groups").innerHTML=h;
+  document.querySelectorAll(".g").forEach(b=>b.onclick=()=>{S.g=+b.dataset.g;save();renderAll();});
+  $("gm").onclick=()=>{if(S.n>2){S.n--;if(S.g>=S.n)S.g=S.n-1;save();renderAll();}};
+  $("gp").onclick=()=>{if(S.n<12){S.n++;save();renderAll();}};
+}
+function renderRows(){
+  const T=totals(),mx=Math.max(4,...T);
+  if(!$("rows").children.length){
+    $("rows").innerHTML=R.map((r,i)=>'<div class="row"><div class="num" style="background:'+r[4]+';border-bottom:4px solid '+shade(r[4],.3)+'">'+(i+1)+'</div>'+
+      '<div><div class="tema">'+r[0]+'</div><div class="pair" style="color:'+shade(r[4],.15)+'">'+r[1]+' <span style="color:var(--mut)">vs</span> '+r[2]+'</div></div>'+
+      '<div class="track"><div class="bar" id="b'+i+'" style="background:linear-gradient(90deg,'+tint(r[4],.35)+','+r[4]+')"></div><div class="tot" id="t'+i+'"></div></div>'+
+      '<div class="ctl"><button data-i="'+i+'" data-d="-1">&minus;</button><span class="v" id="v'+i+'"></span><button data-i="'+i+'" data-d="1">+</button></div></div>').join("");
+    $("rows").querySelectorAll(".ctl button").forEach(b=>b.onclick=()=>{const i=+b.dataset.i,d=+b.dataset.d;S.c[S.g][i]=Math.max(0,S.c[S.g][i]+d);save();renderRows();renderGroups();});
+  }
+  R.forEach((r,i)=>{$("b"+i).style.width=(T[i]/mx*100)+"%";$("t"+i).textContent=T[i];$("v"+i).textContent=S.c[S.g][i];});
+  $("rows").classList.toggle("hidden",S.hide);
+  $("hide").textContent=S.hide?"Mostra le barre":"Nascondi le barre";
+  const all=T.reduce((a,b)=>a+b,0);
+  $("hint").innerHTML='Stai inserendo i bollini del <b>Gruppo '+(S.g+1)+'</b> ('+gsum(S.g)+') &middot; totale classe: <b>'+all+'</b> bollini';
+}
+function renderPodium(){
+  const T=totals();
+  const order=R.map((r,i)=>i).sort((a,b)=>T[b]-T[a]||a-b);
+  // posizioni con pari merito
+  const pos=[];order.forEach((i,k)=>{pos[i]=(k&&T[i]===T[order[k-1]])?pos[order[k-1]]:k+1;});
+  const top=order.slice(0,3);
+  const slot=[top[1],top[0],top[2]],H={1:210,2:150,3:110};
+  $("podium").innerHTML=slot.map((i,k)=>{if(i===undefined)return"";const r=R[i];
+    return '<div class="step" data-k="'+k+'"><div class="card" style="border-color:'+r[4]+'"><div class="n" style="color:'+r[4]+'">REGOLA '+(i+1)+'</div><div class="t">'+r[0]+'</div><div class="p" style="color:'+shade(r[4],.15)+'">'+r[1]+' vs '+r[2]+'</div><div class="d">'+r[3]+'</div></div>'+
+      '<div class="block" style="height:'+H[pos[i]]+'px;background:'+r[4]+'"><div class="pos">'+pos[i]+'&ordm;</div><div class="pts">'+T[i]+' bollini</div></div></div>';}).join("");
+  $("rank").innerHTML=order.slice(3).map(i=>'<span class="rk" style="border-color:'+tint(R[i][4],.5)+'"><span style="color:'+R[i][4]+'">'+pos[i]+'&ordm;</span> '+R[i][0]+' &middot; '+T[i]+'</span>').join("");
+  const z=order.filter(i=>T[i]===0);
+  $("zero").innerHTML=z.length&&T.some(t=>t>0)?'Nessun bollino per: <b>'+z.map(i=>(i+1)+' &middot; '+R[i][0]).join(", ")+'</b> &mdash; perch&eacute;?':"";
+  $("rank").style.transition=$("zero").style.transition="opacity .6s";
+  pstep=0; podStep();
+}
+let pstep=0;
+const PT=["Clic per svelare il terzo posto","Clic per il secondo","E il primo posto&hellip;","Clic per vedere tutte le altre",""];
+function podStep(){
+  const steps=[...document.querySelectorAll(".step")];
+  const order=[2,0,1]; // terzo, secondo, primo
+  steps.forEach(e=>e.classList.toggle("in",order.indexOf(+e.dataset.k)<pstep));
+  const rest=pstep>=4; $("rank").style.opacity=rest?1:0; $("zero").style.opacity=rest?1:0;
+  $("ptip").innerHTML=PT[Math.min(pstep,4)];
+  $("next").classList.toggle("show",pstep<4);
+}
+function renderEleven(){
+  $("strip").innerHTML=R.map((r,i)=>'<span style="border-color:'+tint(r[4],.5)+'"><b style="color:'+r[4]+'">'+(i+1)+'</b> '+r[0]+'</span>').join("")+'<span style="background:#16133a;border-color:#16133a;color:#facc15">11 &middot; ?</span>';
+  let h="";for(let g=0;g<S.n;g++)h+='<div class="el"><div class="h"><b>11</b>Gruppo '+(g+1)+'</div><input data-t="'+g+'" placeholder="Titolo" value="'+((S.t&&S.t[g])||"").replace(/"/g,"&quot;")+'"><textarea data-g="'+g+'" placeholder="la nostra regola&hellip;" rows="3">'+(S.e[g]||"").replace(/</g,"&lt;")+'</textarea></div>';
+  $("eleven").innerHTML=h;
+  $("eleven").querySelectorAll("textarea").forEach(t=>t.oninput=()=>{S.e[+t.dataset.g]=t.value;save();});
+  $("eleven").querySelectorAll("input").forEach(t=>t.oninput=()=>{if(!S.t)S.t=Array(12).fill("");S.t[+t.dataset.t]=t.value;save();});
+}
+const QS=[
+ ["Che cosa abbiamo appena fatto?",2],
+ ["La regola pi&ugrave; votata &egrave; la pi&ugrave; importante&hellip;<br>o solo la pi&ugrave; condivisa?",7],
+ ["Chi ha deciso le regole del gioco di oggi?",9],
+ ["Avreste votato allo stesso modo<br>con il vostro nome accanto al bollino?",5],
+ ["Un bollino in pi&ugrave; cambiava il podio.<br>E un like su un milione?",4],
+ ["Quanto ci avete pensato prima di attaccare un bollino?<br>E prima di un like?",0]
+];
+let qi=0,qr=false;
+function renderQ(){
+  const [q,ri]=QS[qi],r=R[ri];
+  $("qprev").innerHTML=QS.slice(0,qi).map(([pq,pr])=>'<div class="qp"><i style="background:'+R[pr][4]+'">'+(pr+1)+' &middot; '+R[pr][0]+'</i><span>'+pq.replace(/<br>/g," ")+'</span></div>').join("");
+  $("qprev").style.display=qi?"flex":"none";
+  $("qn").textContent="DOMANDA "+(qi+1)+" DI "+QS.length;
+  $("qa").innerHTML=q;
+  $("qc").innerHTML='<span class="rule" style="border-color:'+r[4]+'"><b style="background:'+r[4]+'">'+(ri+1)+'</b><span><span class="tt">'+r[0]+'</span><br><span class="pp" style="color:'+shade(r[4],.15)+'">'+r[1]+' vs '+r[2]+'</span></span></span>';
+  $("qc").classList.toggle("in",qr);
+  $("next").classList.toggle("show",!(qi===QS.length-1&&qr));
+  $("prev").classList.toggle("show",qi>0||qr);
+}
+function show(v){
+  document.querySelectorAll("header button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+  document.querySelectorAll(".view").forEach(s=>s.classList.toggle("show",s.id==="v-"+v));
+  $("groups").style.display=(v==="conta")?"flex":"none";
+  if(v==="podio")renderPodium();
+  if(v==="undici")renderEleven();
+  if(v==="storico")renderHist();
+  cur=v; $("next").classList.toggle("show",v==="podio"&&pstep<4); $("prev").classList.remove("show");
+  if(v==="domanda")renderQ();
+}
+let cur="conta";
+function advance(){
+  if(cur==="podio"&&pstep<4){pstep++;podStep();}
+  else if(cur==="domanda"){if(!qr)qr=true;else if(qi<QS.length-1){qi++;qr=false;}renderQ();}
+}
+function back(){
+  if(cur==="domanda"){if(qr)qr=false;else if(qi>0){qi--;qr=true;}renderQ();}
+}
+$("prev").onclick=e=>{e.stopPropagation();back();};
+$("next").onclick=e=>{e.stopPropagation();advance();};
+$("v-podio").onclick=advance; $("v-domanda").onclick=advance;
+document.addEventListener("keydown",e=>{if(e.target.tagName==="TEXTAREA"||e.target.tagName==="INPUT")return;if(e.key===" "||e.key==="ArrowRight"||e.key==="Enter"){e.preventDefault();advance();}if(e.key==="ArrowLeft"){e.preventDefault();back();}});
+document.querySelectorAll("header button").forEach(b=>b.onclick=()=>show(b.dataset.v));
+$("hide").onclick=()=>{S.hide=!S.hide;save();renderRows();};
+const HK="rushkoff-storico-v1";
+function getH(){try{return JSON.parse(localStorage.getItem(HK)||"[]");}catch(e){return [];}}
+function setH(h){try{localStorage.setItem(HK,JSON.stringify(h));}catch(e){}}
+function toast(t){const e=$("toast");e.innerHTML=t;e.style.display="block";clearTimeout(e._t);e._t=setTimeout(()=>e.style.display="none",2200);}
+function hasData(){return totals().some(x=>x>0)||S.e.slice(0,S.n).some(x=>x&&x.trim())||(S.t||[]).slice(0,S.n).some(x=>x&&x.trim());}
+function saveSession(){
+  if(!hasData()){toast("Non c&rsquo;&egrave; ancora niente da salvare");return false;}
+  const cls=prompt("Classe o gruppo (es. 2B, ITS MOVE):","");
+  if(cls===null)return false;
+  const h=getH();
+  h.unshift({d:new Date().toISOString(),cls:cls.trim(),n:S.n,T:totals(),t:(S.t||[]).slice(0,S.n),e:S.e.slice(0,S.n)});
+  setH(h); toast("Salvato nello storico"); if(cur==="storico")renderHist(); return true;
+}
+function podiumOf(T){
+  const order=R.map((r,i)=>i).sort((a,b)=>T[b]-T[a]||a-b);
+  const pos=[];order.forEach((i,k)=>{pos[i]=(k&&T[i]===T[order[k-1]])?pos[order[k-1]]:k+1;});
+  return {order,pos};
+}
+function fmtDate(d){const x=new Date(d);return x.toLocaleDateString("it-IT")+" "+x.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});}
+function sessText(x){
+  const {order,pos}=podiumOf(x.T);
+  let t="Le 10 regole di Rushkoff \u2014 "+fmtDate(x.d)+(x.cls?" \u2014 "+x.cls:"")+"\n";
+  t+="Classifica: "+order.map(i=>pos[i]+"\u00ba "+R[i][0]+" ("+x.T[i]+")").join(", ")+"\n";
+  const el=x.e.map((e,g)=>[g,(x.t&&x.t[g])||"",e||""]).filter(a=>a[1].trim()||a[2].trim());
+  if(el.length){t+="11\u00aa regola:\n";el.forEach(([g,ti,e])=>t+="- Gruppo "+(g+1)+(ti?" \u00b7 "+ti:"")+(e?": "+e.replace(/\n/g," "):"")+"\n");}
+  return t;
+}
+const escH=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+function renderHist(){
+  const h=getH();
+  if(!h.length){$("hist").innerHTML='<div class="hint">Ancora nessuna sessione salvata.</div>';return;}
+  $("hist").innerHTML=h.map((x,k)=>{const {order,pos}=podiumOf(x.T);
+    const chips=order.slice(0,3).map(i=>'<span class="rk" style="border-color:'+tint(R[i][4],.5)+'"><span style="color:'+R[i][4]+'">'+pos[i]+'&ordm;</span> '+R[i][0]+' &middot; '+x.T[i]+'</span>').join(" ");
+    const el=x.e.map((e,g)=>[g,(x.t&&x.t[g])||"",e||""]).filter(a=>a[1].trim()||a[2].trim());
+    return '<div class="hcard"><div class="top"><span class="when">'+fmtDate(x.d)+(x.cls?' &middot; '+escH(x.cls):'')+'</span><span class="sp"></span><button data-cp="'+k+'">Copia</button><button data-del="'+k+'">Elimina</button></div>'+
+      '<div class="rank" style="justify-content:flex-start;margin-top:8px">'+chips+'</div>'+
+      (el.length?'<ul>'+el.map(([g,ti,e])=>'<li><b>Gruppo '+(g+1)+(ti?' &middot; '+escH(ti):'')+'</b>'+(e?' &mdash; '+escH(e):'')+'</li>').join("")+'</ul>':'')+'</div>';}).join("");
+  $("hist").querySelectorAll("[data-cp]").forEach(b=>b.onclick=()=>copyText(sessText(getH()[+b.dataset.cp])));
+  $("hist").querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(confirm("Eliminare questa sessione dallo storico?")){const h=getH();h.splice(+b.dataset.del,1);setH(h);renderHist();}});
+}
+function copyText(t){
+  const done=()=>toast("Copiato");
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,()=>fallback());else fallback();
+  function fallback(){const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");done();}catch(e){}a.remove();}
+}
+$("saveH").onclick=saveSession; $("save11").onclick=saveSession;
+$("cpH").onclick=()=>{const h=getH();if(h.length)copyText(h.map(sessText).join("\n"));};
+$("dlH").onclick=()=>{const h=getH();if(!h.length)return;const b=new Blob([h.map(sessText).join("\n")],{type:"text/plain"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="rushkoff-storico-"+new Date().toISOString().slice(0,10)+".txt";document.body.appendChild(a);a.click();a.remove();};
+$("reset").onclick=()=>{
+  if(hasData()&&confirm("Vuoi salvare questa sessione nello storico prima di azzerare?")){if(!saveSession())return;}
+  if(confirm("Azzerare tutti i bollini e le undicesime regole?")){blank();S.g=0;save();renderAll();}
+};
+function renderAll(){renderGroups();renderRows();}
+renderAll();
+</script>
+</body>
+</html>
