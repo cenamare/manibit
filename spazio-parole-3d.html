@@ -75,13 +75,18 @@
   <div class="bar">
     <span class="small"><b>Sfide:</b></span>
     <button class="pre" data-p="lingue" disabled>&#127757; IA poliglotta</button>
-    <button class="pre" data-p="intruso" disabled>&#128373; L&rsquo;intruso</button>
     <button class="pre" data-p="gemelli" disabled>&#9802; Gemelli di parola</button>
+    <button class="pre" data-p="segreta" disabled>&#128293; Parola segreta</button>
+    <button class="pre" data-p="ponti" disabled>&#127753; Costruttori di ponti</button>
+    <button class="pre" data-p="inganna" disabled>&#127917; Inganna l&rsquo;IA</button>
+    <button class="pre" data-p="clear" disabled>Svuota</button>
+    <button id="moreBtn" style="font-size:13px;color:var(--mut)">Altri esperimenti &#9662;</button>
+  </div>
+  <div class="bar" id="more" style="display:none">
+    <span class="small"><b>Esperimenti</b> (l&rsquo;IA qui sbaglia spesso):</span>
+    <button class="pre" data-p="intruso" disabled>&#128373; L&rsquo;intruso</button>
     <button class="pre" data-p="doppi" disabled>&#127907; Doppi sensi</button>
     <button class="pre" data-p="calamita" disabled>&#129522; La calamita</button>
-    <button class="pre" data-p="ponti" disabled>&#127753; Costruttori di ponti</button>
-    <button class="pre" data-p="segreta" disabled>&#128293; Parola segreta</button>
-    <button class="pre" data-p="clear" disabled>Svuota</button>
   </div>
   <div class="bar">
     <input type="text" id="inp" placeholder="Aggiungi parole, separate da virgola (es. chiave, mouse)" autocomplete="off" disabled>
@@ -122,23 +127,26 @@ const PRESETS={
   ponti:["calcio","basket","nuoto","corsa","chitarra","pianoforte","violino","canto"]
 };
 const RIVE={A:["calcio","basket","nuoto","corsa"],B:["chitarra","pianoforte","violino","canto"],na:"sport",nb:"musica"};
+const FRASI=["Il cane dorme sul divano.","Marco ha battuto Luca a scacchi.","Oggi piove e resto a casa.","Il gatto insegue il topo.","Il robot ha aiutato il bambino.","Mi piace la pizza ma non la pasta.","Ho perso il treno perché ero in ritardo.","La squadra ha vinto la partita."];
 const SEGRETE=["treno","libro","scuola","compleanno","videogiochi","cane","gatto","pianoforte","robot","calcio","chitarra","pizza","nuoto","bicicletta"];
 // parole comuni di riferimento: servono a capire se una vicinanza e' "tanta" o "poca"
 const VOCAB="casa,porta,finestra,tavolo,sedia,letto,cucina,bagno,giardino,albero,fiore,erba,foglia,montagna,collina,fiume,lago,mare,spiaggia,isola,bosco,prato,strada,ponte,città,paese,piazza,chiesa,negozio,mercato,ospedale,farmacia,banca,ufficio,fabbrica,scuola,classe,libro,quaderno,penna,matita,zaino,lavagna,compiti,professore,amico,famiglia,mamma,papà,nonno,fratello,sorella,bambino,ragazzo,persona,medico,cuoco,poliziotto,pompiere,contadino,cane,gatto,cavallo,mucca,pecora,maiale,gallina,uccello,pesce,topo,coniglio,leone,elefante,serpente,farfalla,ape,formica,ragno,pane,pasta,pizza,riso,carne,formaggio,latte,uovo,mela,banana,arancia,pomodoro,patata,insalata,torta,gelato,cioccolato,caramella,acqua,succo,caffè,tè,piatto,bicchiere,forchetta,coltello,cucchiaio,frigorifero,forno,televisione,telefono,computer,schermo,tastiera,radio,lampada,orologio,chiave,borsa,scarpa,calzino,maglietta,giacca,cappello,ombrello,occhiali,anello,soldi,regalo,festa,gioco,palla,bambola,macchina,autobus,treno,aereo,nave,bicicletta,moto,camion,sole,luna,stella,cielo,nuvola,pioggia,neve,vento,tempesta,fuoco,ghiaccio,sasso,sabbia,ferro,legno,carta,plastica,vetro,colore,rosso,verde,blu,giallo,nero,bianco,mattina,sera,notte,giorno,estate,inverno,primavera,autunno,anno,ora,minuto,lavoro,viaggio,vacanza,sogno,paura,gioia,amore,rabbia,tristezza,silenzio,rumore,voce,parola,lettera,numero,storia,film,canzone,musica,ballo,sport,gara,squadra,medaglia,corsa,salto,mano,piede,testa,occhio,bocca,naso,cuore,sangue,dente,capelli,malattia,medicina,guerra,pace,re,castello,drago,mostro,fantasma,robot,pirata,tesoro,mappa,bandiera,spada,scudo,martello,chiodo,colla,forbici,corda,scala,sacco".split(",");
 const CH={
-  gemelli:['GIOCO &middot; GEMELLI DI PAROLA','Chi &egrave; il tuo gemello?','<b>1.</b> Ognuno scrive su un foglietto una parola a scelta, senza il nome. <b>2.</b> Si raccolgono e si scrivono tutte insieme qui sopra, separate da virgole. <b>3.</b> Nel pannello compare il gemello di ogni parola (la sua vicina pi&ugrave; stretta); <b>&harr; coppia perfetta</b> = due parole che si scelgono a vicenda. <b>4.</b> Ognuno cerca la sua parola e il suo gemello: ve lo aspettavate? Perch&eacute; l&rsquo;IA le avr&agrave; messe vicine?'],
+  gemelli:['GIOCO &middot; GEMELLI DI PAROLA','Chi &egrave; il tuo gemello?','<b>1.</b> Ognuno scrive su un foglietto una parola a scelta, senza il nome. <b>2.</b> Si raccolgono e si scrivono tutte insieme qui sopra, separate da virgole. <b>3.</b> Nel pannello compare il gemello di ogni parola (la sua vicina pi&ugrave; stretta); quando due parole si scelgono a vicenda (&harr;) sono <b>gemelli di parola</b>. <b>4.</b> Ognuno cerca la sua parola e il suo gemello: ve lo aspettavate? Perch&eacute; l&rsquo;IA le avr&agrave; messe vicine?'],
   calamita:['GIOCO &middot; LA CALAMITA','Su quale calamita si attacca?','<b>1.</b> Le 8 parole colorate sono le <b>calamite</b>. <b>2.</b> Proponete una <b>parola nuova</b> e scommettete: a quale calamita si attaccher&agrave;? <b>3.</b> Aggiungetela: la parola prende il colore della calamita pi&ugrave; vicina. Pu&ograve; succedere che <b>si attacchi</b> &#129522;, che sia <b>contesa</b> tra due &#9878;&#65039; o che <b>non la attiri nessuna</b> &#127787;&#65039;. Previsione giusta = 1 punto.'],
   start:['COME SI GIOCA','Sfide sul funzionamento dell&rsquo;IA, non su di voi','Scegliete una sfida qui sopra. Prima di toccare o aggiungere una parola, <b>scrivete su un foglio la vostra previsione</b>; poi controllate. Quando l&rsquo;IA vi sorprende, cercate insieme una spiegazione.'],
   lingue:['SFIDA &middot; IA POLIGLOTTA','Stessa idea, lingue diverse','Italiano, inglese, spagnolo, francese mescolati. Toccate &laquo;cat&raquo;: chi &egrave; la sua vicina? E &laquo;dog&raquo;? E &laquo;manzana&raquo;? L&rsquo;IA mette vicine le parole che vogliono dire la stessa cosa, anche se non si somigliano per niente. E &laquo;chat&raquo;? In francese &egrave; &laquo;gatto&raquo;, in inglese &egrave; &laquo;chiacchierata&raquo;&hellip; Aggiungete parole in altre lingue che conoscete!'],
   doppi:['SFIDA &middot; DOPPI SENSI','Pesca, rete, tastiera&hellip;','Queste parole hanno due significati. Toccatele una alla volta: a quale significato le avvicina l&rsquo;IA? Poi aggiungete altre parole a doppio senso (<b>chiave, mouse, palla, pianta, lingua</b>&hellip;) insieme ai loro &ldquo;contesti&rdquo;.'],
   intruso:['SFIDA &middot; UMANI CONTRO IA','Chi &egrave; l&rsquo;intruso?','<b>1.</b> Sei parole: decidete voi l&rsquo;intruso e <b>perch&eacute;</b>. <b>2.</b> Premete &laquo;Chi &egrave; l&rsquo;intruso per l&rsquo;IA?&raquo;. <b>3.</b> Se la pensate come voi, bene; se no, perch&eacute;? Provate: <b>pinguino, aquila, passero, pappagallo, gallina, pipistrello</b> &middot; <b>Roma, Parigi, Madrid, Berlino, Londra, Milano</b> &middot; <b>violino, chitarra, pianoforte, flauto, tamburo, microfono</b>. Poi inventatene voi una per ingannare l&rsquo;IA.'],
   ponti:['GIOCO &middot; COSTRUTTORI DI PONTI','Una parola che tiene insieme sport e musica','Sulla riva <b>blu</b> c&rsquo;&egrave; lo sport, sulla riva <b>rosa</b> la musica. <b>1.</b> A squadre, cercate una parola che stia vicina a <b>tutte e due</b> le rive (es. <b>ritmo, stadio, palco, tamburo</b>&hellip;). <b>2.</b> Aggiungetela: l&rsquo;IA misura i due <b>piloni</b>, da 0 a 100. <b>3.</b> Un ponte regge quanto il suo pilone pi&ugrave; debole: quello &egrave; il punteggio. <b>4.</b> Vince il ponte pi&ugrave; forte della classifica. Quando un ponte crolla, chiedetevi perch&eacute;.'],
+  inganna:['GIOCO &middot; INGANNA L&rsquo;IA','Stesse parole, significato diverso','<b>1.</b> Leggete la <b>frase di partenza</b> (&#9733;). <b>2.</b> A squadre, scrivete una frase che voglia dire <b>un&rsquo;altra cosa</b> (o il contrario) ma che l&rsquo;IA giudichi quasi uguale. <b>3.</b> L&rsquo;IA d&agrave; un punteggio di somiglianza da 0 a 100: sopra 90 l&rsquo;avete ingannata! <b>4.</b> Decide la classe se il significato &egrave; davvero diverso: se no, toccate la frase e diventa &ldquo;non vale&rdquo;. Trucchi da provare: scambiare chi fa cosa, aggiungere un &laquo;non&raquo;, cambiare una parola sola.'],
   segreta:['GIOCO &middot; PAROLA SEGRETA','Acqua, fuochino, fuoco!','L&rsquo;IA ha scelto una parola segreta: &egrave; il punto <b>?</b> nello spazio. <b>1.</b> A turno, ogni squadra propone una parola. <b>2.</b> L&rsquo;IA dice quanto scotta: <b>0&deg;</b> = una parola qualunque, <b>100&deg;</b> = vicinissima (oltre 100 scotta davvero). <b>3.</b> Usate le parole pi&ugrave; calde per avvicinarvi. Vince chi la trova! Se siete bloccati, chiedete un <b>aiutino</b>.']
 };
 const COLORS=["#f472b6","#38bdf8","#facc15","#4ade80","#fb923c","#a78bfa","#f87171","#2dd4bf","#c084fc","#fbbf24"];
 let ANCH=null; let CURCH="start", REVEAL=false; // le "calamite": se ci sono, i colori sono la calamita più vicina
 let FAM=null;    // costruttori di ponti: le due rive
-let SECRET=null; // parola segreta: {w,m50,m99,found,hint,last}
+let SECRET=null;
+let ING=null;    // inganna l'IA: {k: indice frase, bad:Set di frasi che non valgono} // parola segreta: {w,m50,m99,found,hint,last}
 let VV=null;     // vettori del vocabolario di riferimento
 const NEUTRO="#c4b5fd", BLU="#38bdf8", ROSA="#f472b6", GIALLO="#facc15";
 const $=id=>document.getElementById(id);
@@ -199,7 +207,7 @@ async function startSecret(w){
   SECRET={w,m50:quant(sims,.5),m99:quant(sims,1),found:false,hint:0,near,last:""};
 }
 const sIdx=()=>SECRET?words.indexOf(SECRET.w):-1;
-const nm=i=>(SECRET&&i===sIdx()&&!SECRET.found)?"?":words[i];
+const nm=i=>ING?(i===0?"\u2605":"#"+i):(SECRET&&i===sIdx()&&!SECRET.found)?"?":words[i];
 function temp(i){const si=sIdx(); if(i===si)return 999; return Math.round(100*(S[i][si]-SECRET.m50)/(SECRET.m99-SECRET.m50));}
 function tempLab(t){return t>=999?"&#127881; trovata!":t>=90?"&#128293; bollente":t>=70?"caldo":t>=45?"tiepido":t>=20?"fresco":"&#129482; freddo";}
 function tempCol(t){const x=Math.max(0,Math.min(1,t/110));const a=[56,189,248],b=[239,68,68];return "rgb("+a.map((v,k)=>Math.round(v+(b[k]-v)*x)).join(",")+")";}
@@ -223,7 +231,7 @@ async function embed(list){
   const v=list.map(w=>cache.get(w)); if(v.length)$("dim").textContent=v[0].length; return v;
 }
 async function setWords(list){
-  const nw=[...new Set(list.map(w=>w.trim().toLowerCase()).filter(Boolean))].slice(0,40);
+  const nw=[...new Set(list.map(w=>ING?w.trim():w.trim().toLowerCase()).filter(Boolean))].slice(0,40);
   if(SECRET){const k=nw.indexOf(SECRET.w); if(k>=0)nw.splice(k,1); nw.push(SECRET.w);}
   if(!nw.length){words=[];vecs=[];P=[];S=[];sel=-1;ANCH=null;renderChips();renderPanel();return;}
   status.innerHTML="Penso&hellip;";
@@ -234,10 +242,16 @@ async function setWords(list){
   words=nw;vecs=nv;S=nS;P=nP;SMIN=mn;SMAX=mx;sel=-1;REVEAL=false;
   if(ANCH && !ANCH.every(a=>nw.includes(a))) ANCH=null;
   groups=ANCH?anchorGroups():null;
-  status.innerHTML=SECRET?"<b>"+(words.length-1)+" tentativi</b>. Il punto <b>?</b> &egrave; la parola segreta.":"<b>"+words.length+" parole</b> nello spazio. Trascina per ruotare, tocca una parola.";
+  status.innerHTML=SECRET?"<b>"+(words.length-1)+" tentativi</b>. Il punto <b>?</b> &egrave; la parola segreta.":"<b>"+words.length+(ING?" frasi":" parole")+"</b> nello spazio. Trascina per ruotare, tocca una parola.";
   renderChips(); renderPanel();
 }
 async function addFromInput(){
+  if(ING){ const f=inp.value.trim(); if(!f)return; inp.value="";
+    const norm=x=>x.toLowerCase().replace(/[^a-zàèéìòù0-9 ]/g,"").replace(/\s+/g," ").trim();
+    if(norm(f)===norm(words[0])){showBanner("Cos&igrave; &egrave; la stessa frase: cambiate qualcosa!");return;}
+    addBtn.disabled=true; await setWords(words.concat([f])); addBtn.disabled=false; inp.focus();
+    const i=words.indexOf(f); if(i>0){const v=Math.round(100*S[0][i]); showBanner(v>=90?"&#127917; IA ingannata! Somiglianza "+v:"Somiglianza "+v+": l&rsquo;IA ha notato la differenza");}
+    return; }
   const add=inp.value.split(",").map(s=>s.trim()).filter(Boolean);
   if(!add.length)return; inp.value="";
   addBtn.disabled=true;
@@ -273,9 +287,10 @@ function col(i){
 function renderChips(){
   chips.innerHTML="";
   words.forEach((w,i)=>{if(SECRET&&i===sIdx())return; const c=document.createElement("span");c.className="chip"+(i===sel?" sel":"");c.style.background=col(i);
-    c.innerHTML=esc(w)+' <b title="togli">&times;</b>';
+    c.innerHTML=ING?(i===0?'&#9733; '+esc(w):'<b>#'+i+'</b> '+esc(w)+' <b title="togli">&times;</b>'):esc(w)+' <b title="togli">&times;</b>';
+    if(ING&&ING.bad.has(w)) c.style.textDecoration="line-through";
     c.onclick=()=>selectWord(i===sel?-1:i);
-    c.querySelector("b").onclick=e=>{e.stopPropagation();setWords(words.filter((_,j)=>j!==i));};
+    if(c.querySelector("b[title]")) c.querySelector("b[title]").onclick=e=>{e.stopPropagation();setWords(words.filter((_,j)=>j!==i));};
     chips.appendChild(c);});
   if(ANCH){ legend.innerHTML='<span>Ogni calamita ha il suo colore: le parole nuove prendono il colore della calamita pi&ugrave; vicina.</span>'; }
   else if(FAM) legend.innerHTML='<span><i style="background:'+BLU+'"></i>riva dello sport</span><span><i style="background:'+ROSA+'"></i>riva della musica</span><span><i style="background:'+GIALLO+'"></i>i vostri ponti</span>';
@@ -285,7 +300,7 @@ function renderChips(){
 const pct=x=>Math.round(Math.max(0,Math.min(1,rel(x)))*100);
 function vbars(list){return list.map(([w,v,c,extra])=>'<div class="row"><span class="w">'+w+'</span><span class="track"><span class="fill" style="width:'+Math.max(0,Math.min(100,v))+'%;'+(c?'background:'+c:'')+'"></span></span><span class="n" style="flex-basis:'+(extra?'auto':'34px')+'">'+(extra||v)+'</span></div>').join("");}
 function bars(list){return list.map(([w,s,c])=>'<div class="row"><span class="w">'+esc(w)+'</span><span class="track"><span class="fill" style="width:'+pct(s)+'%;'+(c?'background:'+c:'')+'"></span></span><span class="n">'+pct(s)+'</span></div>').join("");}
-function selectWord(i){if(SECRET&&i>=0&&i===sIdx()&&!SECRET.found)i=-1; sel=i;renderChips();renderPanel();}
+function selectWord(i){if(SECRET&&i>=0&&i===sIdx()&&!SECRET.found)i=-1; if(ING)i=-1; sel=i;renderChips();renderPanel();}
 function colorOf(x,mx){const t=Math.sqrt(Math.min(1,Math.abs(x)/(mx||1)));const base=x>=0?[220,38,38]:[37,99,235];return "rgb("+base.map(b=>Math.round(255+(b-255)*t)).join(",")+")";}
 function barcode(c,v,mx){
   const r=c.getBoundingClientRect(),d=window.devicePixelRatio||1; c.width=Math.max(1,r.width*d); c.height=Math.max(1,r.height*d);
@@ -315,12 +330,12 @@ function twins(){
   if(words.length<4)return "";
   const nn=words.map((_,i)=>{let bj=-1,bs=-9;words.forEach((_,j)=>{if(j!==i&&S[i][j]>bs){bs=S[i][j];bj=j;}});return bj;});
   const rows=words.map((w,i)=>{const j=nn[i],mutual=nn[j]===i;
-    return '<div class="row" style="cursor:pointer" data-i="'+i+'"><span class="w" style="flex:0 0 auto;max-width:42%"><span style="font-weight:700">'+esc(w)+'</span></span><span style="color:var(--mut)">'+(mutual?'&harr;':'&rarr;')+'</span><span style="font-weight:700">'+esc(words[j])+'</span>'+(mutual?' <span class="small" style="color:var(--acc);font-weight:800">coppia perfetta</span>':'')+'</div>';}).join("");
+    return '<div class="row" style="cursor:pointer" data-i="'+i+'"><span class="w" style="flex:0 0 auto;max-width:42%"><span style="font-weight:700">'+esc(w)+'</span></span><span style="color:var(--mut)">'+(mutual?'&harr;':'&rarr;')+'</span><span style="font-weight:700">'+esc(words[j])+'</span>'+(mutual?' <span class="small" style="color:var(--acc);font-weight:800">gemelli</span>':'')+'</div>';}).join("");
   const nm=nn.filter((j,i)=>nn[j]===i).length/2;
-  return '<h3 style="margin-top:14px">Il gemello di ogni parola</h3><div class="small">'+(nm?'<b>'+nm+'</b> '+(nm>1?'coppie perfette':'coppia perfetta')+' (&harr;)':'Nessuna coppia perfetta, per ora')+'. Tocca una riga per vederla nello spazio.</div><div id="twins" style="max-height:260px;overflow:auto;margin-top:6px;border-top:1px solid var(--line);padding-top:4px">'+rows+'</div>';
+  return '<h3 style="margin-top:14px">Il gemello di ogni parola</h3><div class="small">'+(nm?'<b>'+nm+'</b> '+(nm>1?'coppie di gemelli':'coppia di gemelli')+' (&harr;)':'Nessuna coppia di gemelli, per ora')+'. Tocca una riga per vederla nello spazio.</div><div id="twins" style="max-height:260px;overflow:auto;margin-top:6px;border-top:1px solid var(--line);padding-top:4px">'+rows+'</div>';
 }
 function renderPanel(){
-  if(words.length<3&&!SECRET&&!FAM){panel.innerHTML='<span class="pill">COSA VEDE L&rsquo;IA</span><h3>Servono almeno tre parole</h3><div class="small">Poi tocca una parola nello spazio per vedere le pi&ugrave; vicine.</div>';return;}
+  if(words.length<3&&!SECRET&&!FAM&&!ING){panel.innerHTML='<span class="pill">COSA VEDE L&rsquo;IA</span><h3>Servono almeno tre parole</h3><div class="small">Poi tocca una parola nello spazio per vedere le pi&ugrave; vicine.</div>';return;}
   if(sel>=0){
     const list=words.map((w,j)=>[nm(j),S[sel][j],col(j)]).filter((_,j)=>j!==sel).sort((a,b)=>b[1]-a[1]);
     let html='<span class="pill">LE PI&Ugrave; VICINE A</span><h3>&laquo;'+esc(words[sel])+'&raquo;</h3>'+bars(list.slice(0,6));
@@ -341,6 +356,24 @@ function renderPanel(){
     const mx=Math.max(...vecs[sel].map(Math.abs),...(nb>=0?vecs[nb].map(Math.abs):[0]));
     barcode($("bc1"),vecs[sel],mx); if(nb>=0)barcode($("bc2"),vecs[nb],mx);
     zoomPair=[sel,nb]; ["bc1","bc2","zb"].forEach(id=>{const e=$(id); if(e)e.onclick=openZoom;});
+    return;
+  }
+  if(ING){
+    const tr=words.map((w,i)=>i).filter(i=>i>0).map(i=>[i,Math.round(100*S[0][i])]).sort((a,b)=>b[1]-a[1]);
+    let first=true;
+    panel.innerHTML='<span class="pill">INGANNA L&rsquo;IA</span><div class="small" style="margin:2px 0 4px">Frase di partenza</div>'+
+      '<div style="font-size:19px;font-weight:800;line-height:1.3">&#9733; '+esc(words[0])+'</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 12px"><button id="iNext">Un&rsquo;altra frase</button><button id="iOwn">La scrive l&rsquo;insegnante</button></div>'+
+      (tr.length?'<h3>Classifica</h3>'+tr.map(([i,v])=>{const bad=ING.bad.has(words[i]); const win=!bad&&first; if(!bad)first=false;
+        return '<div class="row" style="cursor:pointer;align-items:flex-start;'+(bad?'opacity:.45;text-decoration:line-through':'')+'" data-i="'+i+'"><span class="w" style="flex:1 1 auto;white-space:normal;line-height:1.3"><b>#'+i+'</b> '+esc(words[i])+(win?' &#127942;':'')+'</span>'+
+          '<span class="track" style="flex:0 0 26%;margin-top:6px"><span class="fill" style="width:'+v+'%;background:'+(v>=90?'#ef4444':NEUTRO)+'"></span></span><span class="n">'+(bad?'non vale':v)+'</span></div>';}).join("")+
+        '<div class="small" style="margin-top:6px">Tocca una frase se il significato non &egrave; davvero diverso: diventa &ldquo;non vale&rdquo; (ritocca per annullare).</div>'
+      :'<div class="small">Scrivete qui sopra la vostra frase-trappola e premete Aggiungi.</div>')+
+      '<div class="small" style="margin-top:8px">Qui il punteggio &egrave; assoluto: 100 = per l&rsquo;IA le due frasi sono identiche.</div>';
+    panel.querySelectorAll('.row[data-i]').forEach(r=>r.onclick=()=>{const w=words[+r.dataset.i]; ING.bad.has(w)?ING.bad.delete(w):ING.bad.add(w); renderChips(); renderPanel();});
+    const on=(id,f)=>{const e=$(id); if(e)e.onclick=f;};
+    on("iNext",async()=>{ING.k=(ING.k+1)%FRASI.length; ING.bad=new Set(); await setWords([FRASI[ING.k]]); inp.focus();});
+    on("iOwn",async()=>{const f=prompt("Frase di partenza:"); if(f&&f.trim()){ING.bad=new Set(); await setWords([f.trim()]); inp.focus();}});
     return;
   }
   if(SECRET){
@@ -455,10 +488,12 @@ $("tRot").onclick=e=>{autoRot=!autoRot;e.target.classList.toggle("on",autoRot);}
 $("tAll").onclick=e=>{showAll=!showAll;e.target.classList.toggle("on",showAll);};
 addBtn.onclick=addFromInput;
 inp.addEventListener("keydown",e=>{if(e.key==="Enter")addFromInput();});
-document.querySelectorAll("button.pre").forEach(b=>b.onclick=async()=>{const p=b.dataset.p; ANCH=null; FAM=null; SECRET=null;
+$("moreBtn").onclick=()=>{const m=$("more"),o=m.style.display==="none"; m.style.display=o?"flex":"none"; $("moreBtn").innerHTML="Altri esperimenti "+(o?"&#9652;":"&#9662;");};
+document.querySelectorAll("button.pre").forEach(b=>b.onclick=async()=>{const p=b.dataset.p; ANCH=null; FAM=null; SECRET=null; ING=null; inp.placeholder="Aggiungi parole, separate da virgola (es. chiave, mouse)";
   if(p==="clear"){setChallenge("start");return setWords([]);}
   setChallenge(p);
   if(p==="gemelli"){await setWords([]);inp.focus();return;}
+  if(p==="inganna"){ING={k:Math.floor(Math.random()*FRASI.length),bad:new Set()}; inp.placeholder="Scrivete la vostra frase-trappola"; await setWords([FRASI[ING.k]]);inp.focus();return;}
   if(p==="segreta"){await startSecret();await setWords([]);inp.focus();return;}
   if(p==="ponti"){await startPonti();await setWords(PRESETS.ponti);inp.focus();return;}
   if(p==="calamita")ANCH=PRESETS[p].slice();
