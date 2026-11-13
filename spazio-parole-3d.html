@@ -78,15 +78,14 @@
     <button class="pre" data-p="gemelli" disabled>&#9802; Gemelli di parola</button>
     <button class="pre" data-p="segreta" disabled>&#128293; Parola segreta</button>
     <button class="pre" data-p="ponti" disabled>&#127753; Costruttori di ponti</button>
-    <button class="pre" data-p="inganna" disabled>&#127917; Inganna l&rsquo;IA</button>
+    <button class="pre" data-p="calamita" disabled>&#129522; La calamita</button>
+    <button class="pre" data-p="intruso" disabled>&#128373; L&rsquo;intruso</button>
     <button class="pre" data-p="clear" disabled>Svuota</button>
-    <button id="moreBtn" style="font-size:13px;color:var(--mut)">Altri esperimenti &#9662;</button>
+    <button id="moreBtn" style="font-size:13px;color:var(--mut)">Altro &#9662;</button>
   </div>
   <div class="bar" id="more" style="display:none">
-    <span class="small"><b>Esperimenti</b> (l&rsquo;IA qui sbaglia spesso):</span>
-    <button class="pre" data-p="intruso" disabled>&#128373; L&rsquo;intruso</button>
+    <span class="small"><b>Esperimenti:</b></span>
     <button class="pre" data-p="doppi" disabled>&#127907; Doppi sensi</button>
-    <button class="pre" data-p="calamita" disabled>&#129522; La calamita</button>
   </div>
   <div class="bar">
     <input type="text" id="inp" placeholder="Aggiungi parole, separate da virgola (es. chiave, mouse)" autocomplete="off" disabled>
@@ -143,8 +142,7 @@ const CH={
   lingue:['SFIDA &middot; IA POLIGLOTTA','Stessa idea, lingue diverse','Italiano, inglese, spagnolo, francese mescolati. Toccate &laquo;cat&raquo;: chi &egrave; la sua vicina? E &laquo;dog&raquo;? E &laquo;manzana&raquo;? L&rsquo;IA mette vicine le parole che vogliono dire la stessa cosa, anche se non si somigliano per niente. E &laquo;chat&raquo;? In francese &egrave; &laquo;gatto&raquo;, in inglese &egrave; &laquo;chiacchierata&raquo;&hellip; Aggiungete parole in altre lingue che conoscete!'],
   doppi:['SFIDA &middot; DOPPI SENSI','Pesca, rete, tastiera&hellip;','Queste parole hanno due significati. Toccatele una alla volta: a quale significato le avvicina l&rsquo;IA? Poi aggiungete altre parole a doppio senso (<b>chiave, mouse, palla, pianta, lingua</b>&hellip;) insieme ai loro &ldquo;contesti&rdquo;.'],
   intruso:['SFIDA &middot; UMANI CONTRO IA','Chi &egrave; l&rsquo;intruso?','<b>1.</b> Sei parole: decidete voi l&rsquo;intruso e <b>perch&eacute;</b>. <b>2.</b> Premete &laquo;Chi &egrave; l&rsquo;intruso per l&rsquo;IA?&raquo;. <b>3.</b> Se la pensate come voi, bene; se no, perch&eacute;? Provate: <b>pinguino, aquila, passero, pappagallo, gallina, pipistrello</b> &middot; <b>Roma, Parigi, Madrid, Berlino, Londra, Milano</b> &middot; <b>violino, chitarra, pianoforte, flauto, tamburo, microfono</b>. Poi inventatene voi una per ingannare l&rsquo;IA.'],
-  ponti:['GIOCO &middot; COSTRUTTORI DI PONTI','Una parola che unisce due rive','Due parole, due rive: una <b>blu</b> e una <b>rosa</b>. <b>1.</b> A squadre, cercate una parola che stia vicina a <b>tutte e due</b> (tra &laquo;gatto&raquo; e &laquo;computer&raquo;&hellip; &laquo;mouse&raquo;!). <b>2.</b> Prima di aggiungerla, scommettete: regge o crolla? <b>3.</b> L&rsquo;IA misura i due <b>piloni</b>, da 0 a 100: il ponte regge quanto il pilone pi&ugrave; debole. Sotto 50 crolla. <b>4.</b> Vince il ponte pi&ugrave; forte. Poi &laquo;Altre due rive&raquo;, oppure sceglietele voi.'],
-  inganna:['GIOCO &middot; INGANNA L&rsquo;IA','Stesse parole, significato diverso','<b>1.</b> Leggete la <b>frase di partenza</b> (&#9733;). <b>2.</b> A squadre, scrivete una frase che voglia dire <b>un&rsquo;altra cosa</b> (o il contrario) ma che l&rsquo;IA giudichi quasi uguale. <b>3.</b> L&rsquo;IA d&agrave; un punteggio di somiglianza da 0 a 100: sopra 90 l&rsquo;avete ingannata! <b>4.</b> Decide la classe se il significato &egrave; davvero diverso: se no, toccate la frase e diventa &ldquo;non vale&rdquo;. Trucchi da provare: scambiare chi fa cosa, aggiungere un &laquo;non&raquo;, cambiare una parola sola.'],
+  ponti:['GIOCO &middot; COSTRUTTORI DI PONTI','Una parola che unisce due rive','Due parole, due rive: una <b>blu</b> e una <b>rosa</b>. <b>1.</b> A squadre, cercate una parola che stia vicina a <b>tutte e due</b> (tra &laquo;gatto&raquo; e &laquo;computer&raquo;&hellip; &laquo;mouse&raquo;!). <b>2.</b> Prima di aggiungerla, scommettete: regge o crolla? <b>3.</b> L&rsquo;IA misura le due <b>connessioni</b>, da 0 a 100: il ponte regge quanto la connessione pi&ugrave; debole. Sotto 50 crolla. <b>4.</b> Vince il ponte pi&ugrave; forte. Poi &laquo;Altre due rive&raquo;, oppure sceglietele voi.'],
   segreta:['GIOCO &middot; PAROLA SEGRETA','Acqua, fuochino, fuoco!','L&rsquo;IA ha scelto una parola segreta: &egrave; il punto <b>?</b> nello spazio. <b>1.</b> A turno, ogni squadra propone una parola. <b>2.</b> L&rsquo;IA dice quanto scotta: <b>0&deg;</b> = una parola qualunque, <b>100&deg;</b> = vicinissima (oltre 100 scotta davvero). <b>3.</b> Usate le parole pi&ugrave; calde per avvicinarvi. Vince chi la trova! Se siete bloccati, chiedete un <b>aiutino</b>.']
 };
 const COLORS=["#f472b6","#38bdf8","#facc15","#4ade80","#fb923c","#a78bfa","#f87171","#2dd4bf","#c084fc","#fbbf24"];
@@ -200,7 +198,7 @@ async function startPonti(a,b){
 }
 const isRiva=w=>w===FAM.a?1:w===FAM.b?2:0;
 const RA=()=>"&laquo;"+esc(FAM.a)+"&raquo;", RB=()=>"&laquo;"+esc(FAM.b)+"&raquo;";
-function piloni(i){ // [pilone sport, pilone musica, forza] da 0 a 100
+function piloni(i){ // [connessione con la riva A, con la riva B, forza del ponte] da 0 a 100
   const v=vecs[i], c=x=>Math.max(0,Math.min(100,Math.round(x)));
   const a=c(100*(famSim(FAM.vA,v)-FAM.a50)/(FAM.a99-FAM.a50)), b=c(100*(famSim(FAM.vB,v)-FAM.b50)/(FAM.b99-FAM.b50));
   return [a,b,Math.min(a,b)];
@@ -252,7 +250,7 @@ async function setWords(list){
   words=nw;vecs=nv;S=nS;P=nP;SMIN=mn;SMAX=mx;sel=-1;REVEAL=false;
   if(ANCH && !ANCH.every(a=>nw.includes(a))) ANCH=null;
   groups=ANCH?anchorGroups():null;
-  status.innerHTML=SECRET?"<b>"+(words.length-1)+" tentativi</b>. Il punto <b>?</b> &egrave; la parola segreta.":"<b>"+words.length+(ING?" frasi":" parole")+"</b> nello spazio. Trascina per ruotare, tocca una parola.";
+  status.innerHTML=SECRET?"<b>"+(SECRET.tries||0)+" tentativi</b>. Il punto <b>?</b> &egrave; la parola segreta.":"<b>"+words.length+(ING?" frasi":" parole")+"</b> nello spazio. Trascina per ruotare, tocca una parola.";
   renderChips(); renderPanel();
 }
 async function addFromInput(){
@@ -265,7 +263,7 @@ async function addFromInput(){
   const add=inp.value.split(",").map(s=>s.trim()).filter(Boolean);
   if(!add.length)return; inp.value="";
   addBtn.disabled=true;
-  if(SECRET){ const g=add.map(w=>w.toLowerCase());
+  if(SECRET){ const g=add.map(w=>w.toLowerCase()); if(!SECRET.found) SECRET.tries=(SECRET.tries||0)+g.length;
     if(g.includes(SECRET.w)&&!SECRET.found){SECRET.found=true; showBanner("&#127881; Trovata! La parola segreta era &laquo;"+esc(SECRET.w)+"&raquo;");}
     SECRET.last=g[g.length-1];
     await setWords(words.concat(add)); addBtn.disabled=false; inp.focus();
@@ -273,7 +271,7 @@ async function addFromInput(){
     return; }
   await setWords((CURCH==="intruso"&&add.length>=3)?add:words.concat(add)); addBtn.disabled=false; inp.focus();
   if(FAM&&add.length===1){const i=words.indexOf(add[0].toLowerCase()); if(i>=0&&!isRiva(words[i])){const [a,b,f]=piloni(i); FAM.last=words[i]; renderPanel();
-    showBanner(f>=50?"&#127753; &laquo;"+esc(words[i])+"&raquo; regge: ponte da "+f:"&#128165; &laquo;"+esc(words[i])+"&raquo; crolla: il pilone "+(a<b?RA():RB())+" &egrave; debole ("+f+")");}
+    showBanner(f>=50?"&#127753; &laquo;"+esc(words[i])+"&raquo; regge: ponte da "+f:"&#128165; &laquo;"+esc(words[i])+"&raquo; crolla: la connessione con "+(a<b?RA():RB())+" &egrave; debole ("+f+")");}
     return;}
   if(add.length===1){const i=words.indexOf(add[0].toLowerCase()); if(i>=0&&words.length>1){
     let bj=-1,bs=-9; words.forEach((w,j)=>{if(j!==i&&(!ANCH||ANCH.includes(w))&&S[i][j]>bs){bs=S[i][j];bj=j;}});
@@ -350,7 +348,7 @@ function renderPanel(){
     const list=words.map((w,j)=>[nm(j),S[sel][j],col(j)]).filter((_,j)=>j!==sel).sort((a,b)=>b[1]-a[1]);
     let html='<span class="pill">LE PI&Ugrave; VICINE A</span><h3>&laquo;'+esc(words[sel])+'&raquo;</h3>'+bars(list.slice(0,6));
     if(FAM&&!isRiva(words[sel])){const [a,b,f]=piloni(sel);
-      html+='<h3 style="margin-top:12px">I due piloni del ponte</h3>'+vbars([["pilone "+RA(),a,BLU],["pilone "+RB(),b,ROSA]])+'<span class="badge">'+(f>=50?'&#127753; Il ponte regge: '+f:'&#128165; Il ponte crolla: '+f)+'</span>';
+      html+='<h3 style="margin-top:12px">Le due connessioni del ponte</h3>'+vbars([["con "+RA(),a,BLU],["con "+RB(),b,ROSA]])+'<span class="badge">'+(f>=50?'&#127753; Il ponte regge: '+f:'&#128165; Il ponte crolla: '+f)+'</span>';
     } else if(SECRET&&!SECRET.found){const t=temp(sel); html+='<h3 style="margin-top:12px">Quanto scotta</h3>'+vbars([["&laquo;"+esc(words[sel])+"&raquo;",t,tempCol(t),Math.max(0,t)+"&deg;"]]);}
     if(ANCH){
       const aff=ANCH.map((a,ci)=>[a,S[sel][words.indexOf(a)],COLORS[ci%COLORS.length]]).filter(x=>x[0]!==words[sel]).sort((x,y)=>y[1]-x[1]);
@@ -390,7 +388,7 @@ function renderPanel(){
     const si=sIdx(), g=words.map((w,i)=>i).filter(i=>i!==si).map(i=>[i,temp(i)]).sort((a,b)=>b[1]-a[1]);
     const H=(CATEG[SECRET.w]?["&Egrave; "+CATEG[SECRET.w]]:[]).concat(["Ha "+SECRET.w.length+" lettere","Comincia per &laquo;"+esc(SECRET.w[0].toUpperCase())+"&raquo;","&Egrave; vicina a &laquo;"+esc(SECRET.near)+"&raquo;"]);
     panel.innerHTML='<span class="pill">PAROLA SEGRETA</span>'+
-      (SECRET.found?'<div style="font-size:20px;font-weight:800;margin:6px 0 10px">&#127881; Era &laquo;'+esc(SECRET.w)+'&raquo;</div>':'<h3>Quanto scottano i vostri tentativi</h3>')+
+      (SECRET.found?'<div style="font-size:20px;font-weight:800;margin:6px 0 2px">&#127881; Era &laquo;'+esc(SECRET.w)+'&raquo;</div><div class="small" style="margin-bottom:10px;color:var(--ink)">'+(SECRET.gave?'Vi siete arresi':'Trovata in <b>'+(SECRET.tries||0)+'</b> tentativi')+(SECRET.hint?' &middot; aiutini usati: <b>'+SECRET.hint+'</b>':'')+'</div>':'<h3>Quanto scottano i vostri tentativi</h3>')+
       (g.length?vbars(g.map(([i,t])=>[esc(words[i])+(words[i]===SECRET.last?' &#9664;':''),t,tempCol(t),Math.max(0,t)+'&deg;'])):'<div class="small">Ancora nessun tentativo: scrivete una parola qui sopra.</div>')+
       (SECRET.hint&&!SECRET.found?'<div class="small" style="margin-top:8px;color:var(--ink)"><b>Aiutini:</b> '+H.slice(0,SECRET.hint).join(' &middot; ')+'</div>':'')+
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">'+
@@ -403,7 +401,7 @@ function renderPanel(){
     on("sHint",()=>{SECRET.hint++;renderPanel();});
     on("sCode",async()=>{const c=prompt("Codice della partita:"); if(c&&c.trim()){await startSecret(decS(c));await setWords([]);inp.focus();}});
     on("sLink",e=>{e.preventDefault(); const u=location.origin+location.pathname+"#segreta="+encodeURIComponent(SECRET.code); (navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>showBanner("Link copiato: incollalo dove lo vedono i ragazzi"),()=>prompt("Copia questo link:",u));});
-    on("sGive",()=>{SECRET.found=true;renderChips();renderPanel();showBanner("La parola segreta era &laquo;"+esc(SECRET.w)+"&raquo;");});
+    on("sGive",()=>{SECRET.found=true;SECRET.gave=true;renderChips();renderPanel();showBanner("La parola segreta era &laquo;"+esc(SECRET.w)+"&raquo;");});
     on("sNew",async()=>{await startSecret();await setWords([]);inp.focus();});
     on("sOwn",async()=>{const w=prompt("Parola segreta (non farla vedere!):"); if(w&&w.trim()){await startSecret(w);await setWords([]);inp.focus();}});
     return;
@@ -412,13 +410,13 @@ function renderPanel(){
     const tr=words.map((w,i)=>i).filter(i=>!isRiva(words[i])).map(i=>[i,...piloni(i)]).sort((a,b)=>b[3]-a[3]);
     panel.innerHTML='<span class="pill">COSTRUTTORI DI PONTI</span><div style="font-size:20px;font-weight:800;margin:2px 0 6px"><span style="color:#0284c7">'+esc(FAM.a)+'</span> &harr; <span style="color:#db2777">'+esc(FAM.b)+'</span></div>'+
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px"><button id="pNext">Altre due rive</button><button id="pOwn">Le scegliete voi</button></div><h3>Classifica</h3>'+
-      (tr.length?'<div class="small" style="margin-bottom:6px">Punteggio = il pilone pi&ugrave; debole. Sotto 50 il ponte crolla.</div>'+
+      (tr.length?'<div class="small" style="margin-bottom:6px">Punteggio = la connessione pi&ugrave; debole. Sotto 50 il ponte crolla.</div>'+
         tr.map(([i,a,b,f],k)=>'<div class="row" style="cursor:pointer" data-i="'+i+'"><span class="w" style="flex:0 0 26%"><b>'+(k+1)+'.</b> '+esc(words[i])+(words[i]===FAM.last?' &#9664;':'')+'</span>'+
           '<span class="track" title="'+esc(FAM.a)+'"><span class="fill" style="width:'+a+'%;background:'+BLU+'"></span></span>'+
           '<span class="track" title="'+esc(FAM.b)+'"><span class="fill" style="width:'+b+'%;background:'+ROSA+'"></span></span>'+
           '<span class="n">'+(f>=50?f:'&#128165;'+f)+'</span></div>').join("")
         :'<h3>Nessun ponte, per ora</h3><div class="small">Scrivete qui sopra una parola che stia bene con '+RA()+' e con '+RB()+'.</div>')+
-      '<div class="small" style="margin-top:8px">Barra blu = pilone '+RA()+', barra rosa = pilone '+RB()+'. Tocca un ponte per vederlo nello spazio.</div>';
+      '<div class="small" style="margin-top:8px">Barra blu = connessione con '+RA()+', barra rosa = connessione con '+RB()+'. Tocca un ponte per vederlo nello spazio.</div>';
     panel.querySelectorAll('.row[data-i]').forEach(r=>r.onclick=()=>selectWord(+r.dataset.i));
     $("pNext").onclick=async()=>{await startPonti();inp.focus();};
     $("pOwn").onclick=async()=>{const t=prompt("Le due rive: due parole separate da virgola (es. gatto, computer)"); if(!t)return; const w=t.split(",").map(x=>x.trim().toLowerCase()).filter(Boolean); if(w.length!==2||w[0]===w[1]){alert("Servono due parole diverse, separate da una virgola.");return;} await startPonti(w[0],w[1]);inp.focus();};
@@ -504,7 +502,7 @@ $("tRot").onclick=e=>{autoRot=!autoRot;e.target.classList.toggle("on",autoRot);}
 $("tAll").onclick=e=>{showAll=!showAll;e.target.classList.toggle("on",showAll);};
 addBtn.onclick=addFromInput;
 inp.addEventListener("keydown",e=>{if(e.key==="Enter")addFromInput();});
-$("moreBtn").onclick=()=>{const m=$("more"),o=m.style.display==="none"; m.style.display=o?"flex":"none"; $("moreBtn").innerHTML="Altri esperimenti "+(o?"&#9652;":"&#9662;");};
+$("moreBtn").onclick=()=>{const m=$("more"),o=m.style.display==="none"; m.style.display=o?"flex":"none"; $("moreBtn").innerHTML="Altro "+(o?"&#9652;":"&#9662;");};
 document.querySelectorAll("button.pre").forEach(b=>b.onclick=async()=>{const p=b.dataset.p; ANCH=null; FAM=null; SECRET=null; ING=null; inp.placeholder="Aggiungi parole, separate da virgola (es. chiave, mouse)";
   if(p==="clear"){setChallenge("start");return setWords([]);}
   setChallenge(p);
