@@ -123,12 +123,17 @@ const PRESETS={
   calamita:["calcio","danza","videogiochi","disegno","musica","cucina","animali","moto"],
   lingue:["gatto","cat","gato","chat","cane","dog","perro","chien","mela","apple","manzana","pomme"],
   doppi:["pesca","rete","tastiera","mare","frutta","calcio","computer","pianoforte","internet"],
-  intruso:["cane","gatto","coniglio","criceto","cavallo","frigorifero"],
-  ponti:["calcio","basket","nuoto","corsa","chitarra","pianoforte","violino","canto"]
+  intruso:["cane","gatto","coniglio","criceto","cavallo","frigorifero"]
 };
-const RIVE={A:["calcio","basket","nuoto","corsa"],B:["chitarra","pianoforte","violino","canto"],na:"sport",nb:"musica"};
+// coppie di rive provate col modello (tra parentesi un ponte che regge)
+const RIVE=[["gatto","computer"],["pizza","fuoco"],["cane","luna"],["calcio","musica"],["albero","casa"],["scuola","videogiochi"],["pesce","aereo"],["libro","cinema"]]; // mouse, forno, lupo, stadio, giardino, compiti, volare, film
 const FRASI=["Il cane dorme sul divano.","Marco ha battuto Luca a scacchi.","Oggi piove e resto a casa.","Il gatto insegue il topo.","Il robot ha aiutato il bambino.","Mi piace la pizza ma non la pasta.","Ho perso il treno perché ero in ritardo.","La squadra ha vinto la partita."];
 const SEGRETE=["treno","libro","scuola","compleanno","videogiochi","cane","gatto","pianoforte","robot","calcio","chitarra","pizza","nuoto","bicicletta"];
+const CATEG={treno:"un mezzo di trasporto",bicicletta:"un mezzo di trasporto",libro:"un oggetto",scuola:"un luogo",compleanno:"una festa",videogiochi:"un passatempo",cane:"un animale",gatto:"un animale",pianoforte:"uno strumento musicale",chitarra:"uno strumento musicale",robot:"una macchina",calcio:"uno sport",nuoto:"uno sport",pizza:"un cibo"};
+// codice partita: la parola al contrario, lettere spostate di 7 (per non leggerla a colpo d'occhio)
+const sh=(w,k)=>w.replace(/[a-z]/g,c=>String.fromCharCode((c.charCodeAt(0)-97+k+26)%26+97));
+const encS=w=>sh(w.split("").reverse().join(""),7).toUpperCase();
+const decS=c=>sh(c.trim().toLowerCase(),-7).split("").reverse().join("");
 // parole comuni di riferimento: servono a capire se una vicinanza e' "tanta" o "poca"
 const VOCAB="casa,porta,finestra,tavolo,sedia,letto,cucina,bagno,giardino,albero,fiore,erba,foglia,montagna,collina,fiume,lago,mare,spiaggia,isola,bosco,prato,strada,ponte,città,paese,piazza,chiesa,negozio,mercato,ospedale,farmacia,banca,ufficio,fabbrica,scuola,classe,libro,quaderno,penna,matita,zaino,lavagna,compiti,professore,amico,famiglia,mamma,papà,nonno,fratello,sorella,bambino,ragazzo,persona,medico,cuoco,poliziotto,pompiere,contadino,cane,gatto,cavallo,mucca,pecora,maiale,gallina,uccello,pesce,topo,coniglio,leone,elefante,serpente,farfalla,ape,formica,ragno,pane,pasta,pizza,riso,carne,formaggio,latte,uovo,mela,banana,arancia,pomodoro,patata,insalata,torta,gelato,cioccolato,caramella,acqua,succo,caffè,tè,piatto,bicchiere,forchetta,coltello,cucchiaio,frigorifero,forno,televisione,telefono,computer,schermo,tastiera,radio,lampada,orologio,chiave,borsa,scarpa,calzino,maglietta,giacca,cappello,ombrello,occhiali,anello,soldi,regalo,festa,gioco,palla,bambola,macchina,autobus,treno,aereo,nave,bicicletta,moto,camion,sole,luna,stella,cielo,nuvola,pioggia,neve,vento,tempesta,fuoco,ghiaccio,sasso,sabbia,ferro,legno,carta,plastica,vetro,colore,rosso,verde,blu,giallo,nero,bianco,mattina,sera,notte,giorno,estate,inverno,primavera,autunno,anno,ora,minuto,lavoro,viaggio,vacanza,sogno,paura,gioia,amore,rabbia,tristezza,silenzio,rumore,voce,parola,lettera,numero,storia,film,canzone,musica,ballo,sport,gara,squadra,medaglia,corsa,salto,mano,piede,testa,occhio,bocca,naso,cuore,sangue,dente,capelli,malattia,medicina,guerra,pace,re,castello,drago,mostro,fantasma,robot,pirata,tesoro,mappa,bandiera,spada,scudo,martello,chiodo,colla,forbici,corda,scala,sacco".split(",");
 const CH={
@@ -138,13 +143,13 @@ const CH={
   lingue:['SFIDA &middot; IA POLIGLOTTA','Stessa idea, lingue diverse','Italiano, inglese, spagnolo, francese mescolati. Toccate &laquo;cat&raquo;: chi &egrave; la sua vicina? E &laquo;dog&raquo;? E &laquo;manzana&raquo;? L&rsquo;IA mette vicine le parole che vogliono dire la stessa cosa, anche se non si somigliano per niente. E &laquo;chat&raquo;? In francese &egrave; &laquo;gatto&raquo;, in inglese &egrave; &laquo;chiacchierata&raquo;&hellip; Aggiungete parole in altre lingue che conoscete!'],
   doppi:['SFIDA &middot; DOPPI SENSI','Pesca, rete, tastiera&hellip;','Queste parole hanno due significati. Toccatele una alla volta: a quale significato le avvicina l&rsquo;IA? Poi aggiungete altre parole a doppio senso (<b>chiave, mouse, palla, pianta, lingua</b>&hellip;) insieme ai loro &ldquo;contesti&rdquo;.'],
   intruso:['SFIDA &middot; UMANI CONTRO IA','Chi &egrave; l&rsquo;intruso?','<b>1.</b> Sei parole: decidete voi l&rsquo;intruso e <b>perch&eacute;</b>. <b>2.</b> Premete &laquo;Chi &egrave; l&rsquo;intruso per l&rsquo;IA?&raquo;. <b>3.</b> Se la pensate come voi, bene; se no, perch&eacute;? Provate: <b>pinguino, aquila, passero, pappagallo, gallina, pipistrello</b> &middot; <b>Roma, Parigi, Madrid, Berlino, Londra, Milano</b> &middot; <b>violino, chitarra, pianoforte, flauto, tamburo, microfono</b>. Poi inventatene voi una per ingannare l&rsquo;IA.'],
-  ponti:['GIOCO &middot; COSTRUTTORI DI PONTI','Una parola che tiene insieme sport e musica','Sulla riva <b>blu</b> c&rsquo;&egrave; lo sport, sulla riva <b>rosa</b> la musica. <b>1.</b> A squadre, cercate una parola che stia vicina a <b>tutte e due</b> le rive (es. <b>ritmo, stadio, palco, tamburo</b>&hellip;). <b>2.</b> Aggiungetela: l&rsquo;IA misura i due <b>piloni</b>, da 0 a 100. <b>3.</b> Un ponte regge quanto il suo pilone pi&ugrave; debole: quello &egrave; il punteggio. <b>4.</b> Vince il ponte pi&ugrave; forte della classifica. Quando un ponte crolla, chiedetevi perch&eacute;.'],
+  ponti:['GIOCO &middot; COSTRUTTORI DI PONTI','Una parola che unisce due rive','Due parole, due rive: una <b>blu</b> e una <b>rosa</b>. <b>1.</b> A squadre, cercate una parola che stia vicina a <b>tutte e due</b> (tra &laquo;gatto&raquo; e &laquo;computer&raquo;&hellip; &laquo;mouse&raquo;!). <b>2.</b> Prima di aggiungerla, scommettete: regge o crolla? <b>3.</b> L&rsquo;IA misura i due <b>piloni</b>, da 0 a 100: il ponte regge quanto il pilone pi&ugrave; debole. Sotto 50 crolla. <b>4.</b> Vince il ponte pi&ugrave; forte. Poi &laquo;Altre due rive&raquo;, oppure sceglietele voi.'],
   inganna:['GIOCO &middot; INGANNA L&rsquo;IA','Stesse parole, significato diverso','<b>1.</b> Leggete la <b>frase di partenza</b> (&#9733;). <b>2.</b> A squadre, scrivete una frase che voglia dire <b>un&rsquo;altra cosa</b> (o il contrario) ma che l&rsquo;IA giudichi quasi uguale. <b>3.</b> L&rsquo;IA d&agrave; un punteggio di somiglianza da 0 a 100: sopra 90 l&rsquo;avete ingannata! <b>4.</b> Decide la classe se il significato &egrave; davvero diverso: se no, toccate la frase e diventa &ldquo;non vale&rdquo;. Trucchi da provare: scambiare chi fa cosa, aggiungere un &laquo;non&raquo;, cambiare una parola sola.'],
   segreta:['GIOCO &middot; PAROLA SEGRETA','Acqua, fuochino, fuoco!','L&rsquo;IA ha scelto una parola segreta: &egrave; il punto <b>?</b> nello spazio. <b>1.</b> A turno, ogni squadra propone una parola. <b>2.</b> L&rsquo;IA dice quanto scotta: <b>0&deg;</b> = una parola qualunque, <b>100&deg;</b> = vicinissima (oltre 100 scotta davvero). <b>3.</b> Usate le parole pi&ugrave; calde per avvicinarvi. Vince chi la trova! Se siete bloccati, chiedete un <b>aiutino</b>.']
 };
 const COLORS=["#f472b6","#38bdf8","#facc15","#4ade80","#fb923c","#a78bfa","#f87171","#2dd4bf","#c084fc","#fbbf24"];
 let ANCH=null; let CURCH="start", REVEAL=false; // le "calamite": se ci sono, i colori sono la calamita più vicina
-let FAM=null;    // costruttori di ponti: le due rive
+let FAM=null;    // costruttori di ponti: {a,b,k,...} le due rive
 let SECRET=null;
 let ING=null;    // inganna l'IA: {k: indice frase, bad:Set di frasi che non valgono} // parola segreta: {w,m50,m99,found,hint,last}
 let VV=null;     // vettori del vocabolario di riferimento
@@ -186,12 +191,15 @@ const quant=(arr,q)=>{const a=arr.slice().sort((x,y)=>x-y);return a[Math.floor(q
 async function vocab(){ if(!VV){status.innerHTML="Preparo il gioco&hellip;"; VV=await embed(VOCAB);} return VV; }
 /* --- costruttori di ponti --- */
 const famSim=(F,v)=>F.reduce((t,x)=>t+dot(x,v),0)/F.length;
-async function startPonti(){
-  const V=await vocab(); const vA=await embed(RIVE.A), vB=await embed(RIVE.B);
+async function startPonti(a,b){
+  const k=FAM?FAM.k:-1; if(!a){const nk=(k+1)%RIVE.length; [a,b]=RIVE[nk]; FAM={k:nk};} else FAM={k};
+  const V=await vocab(); const vA=await embed([a]), vB=await embed([b]);
   const sa=V.map(v=>famSim(vA,v)), sb=V.map(v=>famSim(vB,v));
-  FAM={vA,vB,a50:quant(sa,.5),a99:quant(sa,.99),b50:quant(sb,.5),b99:quant(sb,.99)};
+  Object.assign(FAM,{a,b,vA,vB,a50:quant(sa,.5),a99:quant(sa,.92),b50:quant(sb,.5),b99:quant(sb,.92)});
+  await setWords([a,b]);
 }
-const isRiva=w=>RIVE.A.includes(w)?1:RIVE.B.includes(w)?2:0;
+const isRiva=w=>w===FAM.a?1:w===FAM.b?2:0;
+const RA=()=>"&laquo;"+esc(FAM.a)+"&raquo;", RB=()=>"&laquo;"+esc(FAM.b)+"&raquo;";
 function piloni(i){ // [pilone sport, pilone musica, forza] da 0 a 100
   const v=vecs[i], c=x=>Math.max(0,Math.min(100,Math.round(x)));
   const a=c(100*(famSim(FAM.vA,v)-FAM.a50)/(FAM.a99-FAM.a50)), b=c(100*(famSim(FAM.vB,v)-FAM.b50)/(FAM.b99-FAM.b50));
@@ -204,7 +212,7 @@ async function startSecret(w){
   w=w.trim().toLowerCase(); const [v]=await embed([w]);
   const sims=V.map((x,i)=>VOCAB[i]===w?null:dot(x,v)).filter(x=>x!==null);
   let near="",bs=-9; V.forEach((x,i)=>{if(VOCAB[i]!==w&&!w.includes(VOCAB[i])&&!VOCAB[i].includes(w)){const t=dot(x,v);if(t>bs){bs=t;near=VOCAB[i];}}});
-  SECRET={w,m50:quant(sims,.5),m99:quant(sims,1),found:false,hint:0,near,last:""};
+  SECRET={w,m50:quant(sims,.5),m99:quant(sims,1),found:false,hint:0,near,last:"",code:encS(w)};
 }
 const sIdx=()=>SECRET?words.indexOf(SECRET.w):-1;
 const nm=i=>ING?(i===0?"\u2605":"#"+i):(SECRET&&i===sIdx()&&!SECRET.found)?"?":words[i];
@@ -220,6 +228,8 @@ async function load(){
       progress_callback:p=>{ if(p.status==="progress"&&p.file&&/onnx/.test(p.file)) status.innerHTML="Sto caricando il &ldquo;cervello&rdquo; dell&rsquo;IA&hellip; <b>"+Math.round(p.progress||0)+"%</b>"; }});
     status.innerHTML="<b>Pronto!</b> Scegli una sfida qui sotto.";
     [inp,addBtn,...document.querySelectorAll("button.pre")].forEach(b=>b.disabled=false);
+    const m=location.hash.match(/segreta=([^&]+)/);
+    if(m){ setChallenge("segreta"); await startSecret(decS(decodeURIComponent(m[1]))); await setWords([]); }
   }catch(e){
     status.innerHTML="Non riesco a caricare l&rsquo;IA (serve una connessione a internet). Riprova ricaricando la pagina.";
     console.error(e);
@@ -262,8 +272,8 @@ async function addFromInput(){
     if(!SECRET.found&&add.length===1){const i=words.indexOf(SECRET.last); if(i>=0){const t=temp(i); showBanner("&laquo;"+esc(words[i])+"&raquo;: "+Math.max(0,t)+"&deg; &middot; "+tempLab(t));}}
     return; }
   await setWords((CURCH==="intruso"&&add.length>=3)?add:words.concat(add)); addBtn.disabled=false; inp.focus();
-  if(FAM&&add.length===1){const i=words.indexOf(add[0].toLowerCase()); if(i>=0&&!isRiva(words[i])){const [a,b,f]=piloni(i); selectWord(i);
-    showBanner(f>=50?"&#127753; &laquo;"+esc(words[i])+"&raquo; regge: ponte da "+f+" (sport "+a+", musica "+b+")":"&#128165; &laquo;"+esc(words[i])+"&raquo; crolla: il pilone "+(a<b?"sport":"musica")+" &egrave; debole ("+f+")");}
+  if(FAM&&add.length===1){const i=words.indexOf(add[0].toLowerCase()); if(i>=0&&!isRiva(words[i])){const [a,b,f]=piloni(i); FAM.last=words[i]; renderPanel();
+    showBanner(f>=50?"&#127753; &laquo;"+esc(words[i])+"&raquo; regge: ponte da "+f:"&#128165; &laquo;"+esc(words[i])+"&raquo; crolla: il pilone "+(a<b?RA():RB())+" &egrave; debole ("+f+")");}
     return;}
   if(add.length===1){const i=words.indexOf(add[0].toLowerCase()); if(i>=0&&words.length>1){
     let bj=-1,bs=-9; words.forEach((w,j)=>{if(j!==i&&(!ANCH||ANCH.includes(w))&&S[i][j]>bs){bs=S[i][j];bj=j;}});
@@ -293,7 +303,7 @@ function renderChips(){
     if(c.querySelector("b[title]")) c.querySelector("b[title]").onclick=e=>{e.stopPropagation();setWords(words.filter((_,j)=>j!==i));};
     chips.appendChild(c);});
   if(ANCH){ legend.innerHTML='<span>Ogni calamita ha il suo colore: le parole nuove prendono il colore della calamita pi&ugrave; vicina.</span>'; }
-  else if(FAM) legend.innerHTML='<span><i style="background:'+BLU+'"></i>riva dello sport</span><span><i style="background:'+ROSA+'"></i>riva della musica</span><span><i style="background:'+GIALLO+'"></i>i vostri ponti</span>';
+  else if(FAM) legend.innerHTML='<span><i style="background:'+BLU+'"></i>riva '+RA()+'</span><span><i style="background:'+ROSA+'"></i>riva '+RB()+'</span><span><i style="background:'+GIALLO+'"></i>i vostri ponti</span>';
   else if(SECRET) legend.innerHTML='<span><i style="background:'+tempCol(0)+'"></i>freddo</span><span><i style="background:'+tempCol(55)+'"></i>tiepido</span><span><i style="background:'+tempCol(110)+'"></i>bollente</span><span><i style="background:#fff;border:1px solid #999"></i>? la parola segreta</span>';
   else legend.innerHTML='';
 }
@@ -340,7 +350,7 @@ function renderPanel(){
     const list=words.map((w,j)=>[nm(j),S[sel][j],col(j)]).filter((_,j)=>j!==sel).sort((a,b)=>b[1]-a[1]);
     let html='<span class="pill">LE PI&Ugrave; VICINE A</span><h3>&laquo;'+esc(words[sel])+'&raquo;</h3>'+bars(list.slice(0,6));
     if(FAM&&!isRiva(words[sel])){const [a,b,f]=piloni(sel);
-      html+='<h3 style="margin-top:12px">I due piloni del ponte</h3>'+vbars([["pilone sport",a,BLU],["pilone musica",b,ROSA]])+'<span class="badge">'+(f>=50?'&#127753; Il ponte regge: '+f:'&#128165; Il ponte crolla: '+f)+'</span>';
+      html+='<h3 style="margin-top:12px">I due piloni del ponte</h3>'+vbars([["pilone "+RA(),a,BLU],["pilone "+RB(),b,ROSA]])+'<span class="badge">'+(f>=50?'&#127753; Il ponte regge: '+f:'&#128165; Il ponte crolla: '+f)+'</span>';
     } else if(SECRET&&!SECRET.found){const t=temp(sel); html+='<h3 style="margin-top:12px">Quanto scotta</h3>'+vbars([["&laquo;"+esc(words[sel])+"&raquo;",t,tempCol(t),Math.max(0,t)+"&deg;"]]);}
     if(ANCH){
       const aff=ANCH.map((a,ci)=>[a,S[sel][words.indexOf(a)],COLORS[ci%COLORS.length]]).filter(x=>x[0]!==words[sel]).sort((x,y)=>y[1]-x[1]);
@@ -378,18 +388,21 @@ function renderPanel(){
   }
   if(SECRET){
     const si=sIdx(), g=words.map((w,i)=>i).filter(i=>i!==si).map(i=>[i,temp(i)]).sort((a,b)=>b[1]-a[1]);
-    const H=["Ha "+SECRET.w.length+" lettere","Comincia per &laquo;"+esc(SECRET.w[0].toUpperCase())+"&raquo;","&Egrave; vicina a &laquo;"+esc(SECRET.near)+"&raquo;"];
+    const H=(CATEG[SECRET.w]?["&Egrave; "+CATEG[SECRET.w]]:[]).concat(["Ha "+SECRET.w.length+" lettere","Comincia per &laquo;"+esc(SECRET.w[0].toUpperCase())+"&raquo;","&Egrave; vicina a &laquo;"+esc(SECRET.near)+"&raquo;"]);
     panel.innerHTML='<span class="pill">PAROLA SEGRETA</span>'+
       (SECRET.found?'<div style="font-size:20px;font-weight:800;margin:6px 0 10px">&#127881; Era &laquo;'+esc(SECRET.w)+'&raquo;</div>':'<h3>Quanto scottano i vostri tentativi</h3>')+
       (g.length?vbars(g.map(([i,t])=>[esc(words[i])+(words[i]===SECRET.last?' &#9664;':''),t,tempCol(t),Math.max(0,t)+'&deg;'])):'<div class="small">Ancora nessun tentativo: scrivete una parola qui sopra.</div>')+
       (SECRET.hint&&!SECRET.found?'<div class="small" style="margin-top:8px;color:var(--ink)"><b>Aiutini:</b> '+H.slice(0,SECRET.hint).join(' &middot; ')+'</div>':'')+
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">'+
-      (!SECRET.found&&SECRET.hint<3?'<button id="sHint">&#128161; Aiutino</button>':'')+
+      (!SECRET.found&&SECRET.hint<H.length?'<button id="sHint">&#128161; Aiutino</button>':'')+
       (!SECRET.found?'<button id="sGive">Mi arrendo</button>':'')+
-      '<button id="sNew">Nuova parola</button><button id="sOwn">La sceglie l&rsquo;insegnante</button></div>'+
+      '<button id="sNew">Nuova parola</button><button id="sOwn">La sceglie l&rsquo;insegnante</button><button id="sCode">Ho un codice</button></div>'+
+      '<div class="small" style="margin-top:10px;border-top:1px solid var(--line);padding-top:8px">Codice di questa partita: <b style="font-family:var(--mono);color:var(--ink);letter-spacing:.08em">'+SECRET.code+'</b> &middot; sugli altri PC: &laquo;Parola segreta&raquo; &rarr; &laquo;Ho un codice&raquo;. <a href="#" id="sLink">Copia il link</a></div>'+
       '<div class="small" style="margin-top:8px">0&deg; = una parola qualunque &middot; 100&deg; = vicinissima &middot; oltre 100 scotta davvero. Tocca un tentativo per vedere i suoi numeri.</div>';
     const on=(id,f)=>{const e=$(id); if(e)e.onclick=f;};
     on("sHint",()=>{SECRET.hint++;renderPanel();});
+    on("sCode",async()=>{const c=prompt("Codice della partita:"); if(c&&c.trim()){await startSecret(decS(c));await setWords([]);inp.focus();}});
+    on("sLink",e=>{e.preventDefault(); const u=location.origin+location.pathname+"#segreta="+encodeURIComponent(SECRET.code); (navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>showBanner("Link copiato: incollalo dove lo vedono i ragazzi"),()=>prompt("Copia questo link:",u));});
     on("sGive",()=>{SECRET.found=true;renderChips();renderPanel();showBanner("La parola segreta era &laquo;"+esc(SECRET.w)+"&raquo;");});
     on("sNew",async()=>{await startSecret();await setWords([]);inp.focus();});
     on("sOwn",async()=>{const w=prompt("Parola segreta (non farla vedere!):"); if(w&&w.trim()){await startSecret(w);await setWords([]);inp.focus();}});
@@ -397,15 +410,18 @@ function renderPanel(){
   }
   if(FAM){
     const tr=words.map((w,i)=>i).filter(i=>!isRiva(words[i])).map(i=>[i,...piloni(i)]).sort((a,b)=>b[3]-a[3]);
-    panel.innerHTML='<span class="pill">CLASSIFICA DEI PONTI</span>'+
+    panel.innerHTML='<span class="pill">COSTRUTTORI DI PONTI</span><div style="font-size:20px;font-weight:800;margin:2px 0 6px"><span style="color:#0284c7">'+esc(FAM.a)+'</span> &harr; <span style="color:#db2777">'+esc(FAM.b)+'</span></div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px"><button id="pNext">Altre due rive</button><button id="pOwn">Le scegliete voi</button></div><h3>Classifica</h3>'+
       (tr.length?'<div class="small" style="margin-bottom:6px">Punteggio = il pilone pi&ugrave; debole. Sotto 50 il ponte crolla.</div>'+
-        tr.map(([i,a,b,f],k)=>'<div class="row" style="cursor:pointer" data-i="'+i+'"><span class="w" style="flex:0 0 26%"><b>'+(k+1)+'.</b> '+esc(words[i])+'</span>'+
-          '<span class="track" title="sport"><span class="fill" style="width:'+a+'%;background:'+BLU+'"></span></span>'+
-          '<span class="track" title="musica"><span class="fill" style="width:'+b+'%;background:'+ROSA+'"></span></span>'+
+        tr.map(([i,a,b,f],k)=>'<div class="row" style="cursor:pointer" data-i="'+i+'"><span class="w" style="flex:0 0 26%"><b>'+(k+1)+'.</b> '+esc(words[i])+(words[i]===FAM.last?' &#9664;':'')+'</span>'+
+          '<span class="track" title="'+esc(FAM.a)+'"><span class="fill" style="width:'+a+'%;background:'+BLU+'"></span></span>'+
+          '<span class="track" title="'+esc(FAM.b)+'"><span class="fill" style="width:'+b+'%;background:'+ROSA+'"></span></span>'+
           '<span class="n">'+(f>=50?f:'&#128165;'+f)+'</span></div>').join("")
-        :'<h3>Nessun ponte, per ora</h3><div class="small">Scrivete qui sopra una parola che stia bene sia con lo sport sia con la musica.</div>')+
-      '<div class="small" style="margin-top:8px">Barra blu = pilone sport, barra rosa = pilone musica. Tocca un ponte per vederlo nello spazio.</div>';
+        :'<h3>Nessun ponte, per ora</h3><div class="small">Scrivete qui sopra una parola che stia bene con '+RA()+' e con '+RB()+'.</div>')+
+      '<div class="small" style="margin-top:8px">Barra blu = pilone '+RA()+', barra rosa = pilone '+RB()+'. Tocca un ponte per vederlo nello spazio.</div>';
     panel.querySelectorAll('.row[data-i]').forEach(r=>r.onclick=()=>selectWord(+r.dataset.i));
+    $("pNext").onclick=async()=>{await startPonti();inp.focus();};
+    $("pOwn").onclick=async()=>{const t=prompt("Le due rive: due parole separate da virgola (es. gatto, computer)"); if(!t)return; const w=t.split(",").map(x=>x.trim().toLowerCase()).filter(Boolean); if(w.length!==2||w[0]===w[1]){alert("Servono due parole diverse, separate da una virgola.");return;} await startPonti(w[0],w[1]);inp.focus();};
     return;
   }
   if(CURCH==="intruso"&&words.length>=3){
@@ -495,7 +511,7 @@ document.querySelectorAll("button.pre").forEach(b=>b.onclick=async()=>{const p=b
   if(p==="gemelli"){await setWords([]);inp.focus();return;}
   if(p==="inganna"){ING={k:Math.floor(Math.random()*FRASI.length),bad:new Set()}; inp.placeholder="Scrivete la vostra frase-trappola"; await setWords([FRASI[ING.k]]);inp.focus();return;}
   if(p==="segreta"){await startSecret();await setWords([]);inp.focus();return;}
-  if(p==="ponti"){await startPonti();await setWords(PRESETS.ponti);inp.focus();return;}
+  if(p==="ponti"){await startPonti();inp.focus();return;}
   if(p==="calamita")ANCH=PRESETS[p].slice();
   await setWords(PRESETS[p]);});
 if(/embed/.test(location.search)){document.querySelectorAll(".kick,h1,.sub").forEach(e=>e.style.display="none");}
