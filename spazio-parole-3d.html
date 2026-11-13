@@ -74,11 +74,11 @@
 
   <div class="bar">
     <span class="small"><b>Sfide:</b></span>
-    <button class="pre" data-p="calamita" disabled>&#129522; La calamita</button>
-    <button class="pre" data-p="gemelli" disabled>&#128158; Gemelli di parola</button>
     <button class="pre" data-p="lingue" disabled>&#127757; IA poliglotta</button>
-    <button class="pre" data-p="doppi" disabled>&#127907; Doppi sensi</button>
     <button class="pre" data-p="intruso" disabled>&#128373; L&rsquo;intruso</button>
+    <button class="pre" data-p="gemelli" disabled>&#128158; Gemelli di parola</button>
+    <button class="pre" data-p="doppi" disabled>&#127907; Doppi sensi</button>
+    <button class="pre" data-p="calamita" disabled>&#129522; La calamita</button>
     <button class="pre" data-p="ponti" disabled>&#127753; Costruttori di ponti</button>
     <button class="pre" data-p="sport" disabled>&#9917; Sport</button>
     <button class="pre" data-p="hobby" disabled>&#127928; Hobby</button>
@@ -130,13 +130,13 @@ const CH={
   start:['COME SI GIOCA','Sfide sul funzionamento dell&rsquo;IA, non su di voi','Scegliete una sfida qui sopra. Prima di toccare o aggiungere una parola, <b>scrivete su un foglio la vostra previsione</b>; poi controllate. Quando l&rsquo;IA vi sorprende, cercate insieme una spiegazione.'],
   lingue:['SFIDA &middot; IA POLIGLOTTA','Stessa idea, lingue diverse','Italiano, inglese, spagnolo, francese mescolati. Toccate &laquo;cat&raquo;: chi &egrave; la sua vicina? E &laquo;dog&raquo;? E &laquo;manzana&raquo;? L&rsquo;IA mette vicine le parole che vogliono dire la stessa cosa, anche se non si somigliano per niente. E &laquo;chat&raquo;? In francese &egrave; &laquo;gatto&raquo;, in inglese &egrave; &laquo;chiacchierata&raquo;&hellip; Aggiungete parole in altre lingue che conoscete!'],
   doppi:['SFIDA &middot; DOPPI SENSI','Pesca, rete, tastiera&hellip;','Queste parole hanno due significati. Toccatele una alla volta: a quale significato le avvicina l&rsquo;IA? Poi aggiungete altre parole a doppio senso (<b>chiave, mouse, palla, pianta, lingua</b>&hellip;) insieme ai loro &ldquo;contesti&rdquo;.'],
-  intruso:['SFIDA &middot; L&rsquo;INTRUSO','L&rsquo;IA trova la parola che non c&rsquo;entra?','Guardate i colori: l&rsquo;intruso &egrave; da solo? Poi rendete la sfida pi&ugrave; difficile: togliete &laquo;frigorifero&raquo; e aggiungete un intruso pi&ugrave; furbo (<b>pesce rosso? leone? peluche?</b>). Fin dove arriva l&rsquo;IA?'],
+  intruso:['SFIDA &middot; UMANI CONTRO IA','Chi &egrave; l&rsquo;intruso?','<b>1.</b> Sei parole: decidete voi l&rsquo;intruso e <b>perch&eacute;</b>. <b>2.</b> Premete &laquo;Chi &egrave; l&rsquo;intruso per l&rsquo;IA?&raquo;. <b>3.</b> Se la pensate come voi, bene; se no, perch&eacute;? Provate: <b>pinguino, aquila, passero, pappagallo, gallina, pipistrello</b> &middot; <b>Roma, Parigi, Madrid, Berlino, Londra, Milano</b> &middot; <b>violino, chitarra, pianoforte, flauto, tamburo, microfono</b>. Poi inventatene voi una per ingannare l&rsquo;IA.'],
   ponti:['SFIDA &middot; COSTRUTTORI DI PONTI','Una parola a met&agrave; strada','Ci sono due gruppi: sport e musica. A squadre, cercate la parola che finisce <b>esattamente a met&agrave;</b>: toccandola, le due barre &ldquo;vicinanza ai gruppi&rdquo; devono essere quasi uguali. Vince il ponte pi&ugrave; equilibrato! (E perch&eacute; &laquo;canto&raquo; sta con lo sport?)'],
   sport:['SFIDA &middot; PREVEDI E VERIFICA','Dove finir&agrave;?','Prima di aggiungere una parola (<b>pallone, sudore, medaglia, stadio</b>&hellip;) scrivete dove pensate che finir&agrave; e a chi sar&agrave; pi&ugrave; vicina. Poi aggiungetela: chi ci ha preso?'],
   hobby:['SFIDA &middot; PREVEDI E VERIFICA','Dove finir&agrave;?','Aggiungete una parola a sorpresa (<b>pizza, Luna, robot, colla</b>&hellip;): a quale gruppo si avvicina? Siete d&rsquo;accordo con l&rsquo;IA? Dove secondo voi sbaglia?']
 };
 const COLORS=["#f472b6","#38bdf8","#facc15","#4ade80","#fb923c","#a78bfa","#f87171","#2dd4bf","#c084fc","#fbbf24"];
-let ANCH=null; // le "calamite": se ci sono, i colori sono la calamita più vicina
+let ANCH=null; let CURCH="start", REVEAL=false; // le "calamite": se ci sono, i colori sono la calamita più vicina
 const $=id=>document.getElementById(id);
 const status=$("status"), inp=$("inp"), addBtn=$("add"), chips=$("chips"), legend=$("legend"), panel=$("panel"), chal=$("challenge"), cv=$("cv"), ctx=cv.getContext("2d");
 let ext=null; const cache=new Map();
@@ -244,7 +244,7 @@ async function setWords(list){
   const nS=nv.map(a=>nv.map(b=>dot(a,b)));
   let mn=2,mx=-2;for(let i=0;i<nS.length;i++)for(let j=i+1;j<nS.length;j++){mn=Math.min(mn,nS[i][j]);mx=Math.max(mx,nS[i][j]);}
   const nP=nw.length>=3?pca3(nv):nw.map((_,i)=>[i?0.6:-0.6,0,0]);
-  words=nw;vecs=nv;S=nS;P=nP;SMIN=mn;SMAX=mx;sel=-1;
+  words=nw;vecs=nv;S=nS;P=nP;SMIN=mn;SMAX=mx;sel=-1;REVEAL=false;
   if(ANCH && !ANCH.every(a=>nw.includes(a))) ANCH=null;
   if(ANCH){ groups=anchorGroups(); gNames=ANCH.slice(); }
   else { groups=kgroups(nv); gNames=groupNames(); }
@@ -254,7 +254,7 @@ async function setWords(list){
 async function addFromInput(){
   const add=inp.value.split(",").map(s=>s.trim()).filter(Boolean);
   if(!add.length)return; inp.value="";
-  addBtn.disabled=true; await setWords(words.concat(add)); addBtn.disabled=false; inp.focus();
+  addBtn.disabled=true; await setWords((CURCH==="intruso"&&add.length>=3)?add:words.concat(add)); addBtn.disabled=false; inp.focus();
   if(add.length===1){const i=words.indexOf(add[0].toLowerCase()); if(i>=0&&words.length>1){
     let bj=-1,bs=-9; words.forEach((w,j)=>{if(j!==i&&(!ANCH||ANCH.includes(w))&&S[i][j]>bs){bs=S[i][j];bj=j;}});
     selectWord(i);
@@ -305,7 +305,7 @@ function openZoom(){
 }
 let bannerT=null;
 function showBanner(t){const b=$("banner");b.innerHTML=t;b.classList.add("on");clearTimeout(bannerT);bannerT=setTimeout(()=>b.classList.remove("on"),4500);}
-function setChallenge(k){const c=CH[k]||CH.start; chal.innerHTML='<span class="pill">'+c[0]+'</span><h3>'+c[1]+'</h3><div class="small" style="color:#16161d;line-height:1.55">'+c[2]+'</div>';
+function setChallenge(k){CURCH=k; REVEAL=false; const c=CH[k]||CH.start; chal.innerHTML='<span class="pill">'+c[0]+'</span><h3>'+c[1]+'</h3><div class="small" style="color:#16161d;line-height:1.55">'+c[2]+'</div>';
   document.querySelectorAll("button.pre").forEach(b=>b.classList.toggle("on",b.dataset.p===k));}
 function twins(){
   if(words.length<4)return "";
@@ -341,6 +341,14 @@ function renderPanel(){
     const mx=Math.max(...vecs[sel].map(Math.abs),...(nb>=0?vecs[nb].map(Math.abs):[0]));
     barcode($("bc1"),vecs[sel],mx); if(nb>=0)barcode($("bc2"),vecs[nb],mx);
     zoomPair=[sel,nb]; ["bc1","bc2","zb"].forEach(id=>{const e=$(id); if(e)e.onclick=openZoom;});
+    return;
+  }
+  if(CURCH==="intruso"&&words.length>=3){
+    const m=words.map((w,i)=>[w,words.reduce((a,_,j)=>a+(j===i?0:S[i][j]),0)/(words.length-1),col(i)]).sort((a,b)=>a[1]-b[1]);
+    panel.innerHTML='<span class="pill">L&rsquo;INTRUSO</span><h3>Prima decidete voi: chi &egrave; l&rsquo;intruso, e perch&eacute;?</h3>'+
+      (REVEAL?'<div style="font-size:20px;font-weight:800;margin:10px 0">&#128373; Per l&rsquo;IA l&rsquo;intruso &egrave; &laquo;'+esc(m[0][0])+'&raquo;</div><div class="small">Quanto ogni parola &ldquo;sta con le altre&rdquo; (la pi&ugrave; bassa &egrave; l&rsquo;intruso):</div>'+bars(m.map(x=>[x[0],x[1],x[2]]))
+             :'<button id="rev" class="zoombtn" style="margin-top:10px">&#128373; Chi &egrave; l&rsquo;intruso per l&rsquo;IA?</button>');
+    const rb=$("rev"); if(rb) rb.onclick=()=>{REVEAL=true;renderPanel();};
     return;
   }
   let best=[-2,0,0],worst=[2,0,0];
