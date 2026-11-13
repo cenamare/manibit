@@ -76,12 +76,11 @@
     <span class="small"><b>Sfide:</b></span>
     <button class="pre" data-p="lingue" disabled>&#127757; IA poliglotta</button>
     <button class="pre" data-p="intruso" disabled>&#128373; L&rsquo;intruso</button>
-    <button class="pre" data-p="gemelli" disabled>&#128158; Gemelli di parola</button>
+    <button class="pre" data-p="gemelli" disabled>&#9802; Gemelli di parola</button>
     <button class="pre" data-p="doppi" disabled>&#127907; Doppi sensi</button>
     <button class="pre" data-p="calamita" disabled>&#129522; La calamita</button>
     <button class="pre" data-p="ponti" disabled>&#127753; Costruttori di ponti</button>
-    <button class="pre" data-p="sport" disabled>&#9917; Sport</button>
-    <button class="pre" data-p="hobby" disabled>&#127928; Hobby</button>
+    <button class="pre" data-p="segreta" disabled>&#128293; Parola segreta</button>
     <button class="pre" data-p="clear" disabled>Svuota</button>
   </div>
   <div class="bar">
@@ -104,7 +103,7 @@
     <div class="side">
       <div class="card ex" id="challenge"></div>
       <div class="card" id="panel"></div>
-      <div class="small">I <b>colori</b> sono i gruppi che l&rsquo;IA ha trovato da sola: nessuno le ha detto quali sono. La <b>vicinanza</b> (da 0 a 100) &egrave; relativa alle parole sullo schermo: 100 = la coppia pi&ugrave; vicina, 0 = la pi&ugrave; lontana. Ogni parola &egrave; fatta di <b id="dim">768</b> numeri: ognuno &egrave; una <b>coordinata</b> lungo una dimensione, come latitudine e longitudine su una mappa ma 768 volte. La vicinanza si calcola su tutte le dimensioni; il disegno in 3D ne &egrave; un&rsquo;&ldquo;ombra&rdquo;. Le parole restano sul tuo computer: l&rsquo;IA gira dentro il browser.</div>
+      <div class="small">La <b>vicinanza</b> (da 0 a 100) &egrave; relativa alle parole sullo schermo: 100 = la coppia pi&ugrave; vicina, 0 = la pi&ugrave; lontana. Ogni parola &egrave; fatta di <b id="dim">768</b> numeri: ognuno &egrave; una <b>coordinata</b> lungo una dimensione, come latitudine e longitudine su una mappa ma 768 volte. La vicinanza si calcola su tutte le dimensioni; il disegno in 3D ne &egrave; un&rsquo;&ldquo;ombra&rdquo;. Le parole restano sul tuo computer: l&rsquo;IA gira dentro il browser.</div>
     </div>
   </div>
 </div>
@@ -120,27 +119,32 @@ const PRESETS={
   lingue:["gatto","cat","gato","chat","cane","dog","perro","chien","mela","apple","manzana","pomme"],
   doppi:["pesca","rete","tastiera","mare","frutta","calcio","computer","pianoforte","internet"],
   intruso:["cane","gatto","coniglio","criceto","cavallo","frigorifero"],
-  ponti:["calcio","basket","corsa","nuoto","chitarra","pianoforte","violino","canto"],
-  sport:["calcio","pallavolo","basket","tennis","nuoto","corsa","ciclismo","sci"],
-  hobby:["chitarra","pianoforte","disegno","lettura","videogiochi","scacchi","cucina","fotografia"]
+  ponti:["calcio","basket","nuoto","corsa","chitarra","pianoforte","violino","canto"]
 };
+const RIVE={A:["calcio","basket","nuoto","corsa"],B:["chitarra","pianoforte","violino","canto"],na:"sport",nb:"musica"};
+const SEGRETE=["treno","libro","scuola","compleanno","videogiochi","cane","gatto","pianoforte","robot","calcio","chitarra","pizza","nuoto","bicicletta"];
+// parole comuni di riferimento: servono a capire se una vicinanza e' "tanta" o "poca"
+const VOCAB="casa,porta,finestra,tavolo,sedia,letto,cucina,bagno,giardino,albero,fiore,erba,foglia,montagna,collina,fiume,lago,mare,spiaggia,isola,bosco,prato,strada,ponte,città,paese,piazza,chiesa,negozio,mercato,ospedale,farmacia,banca,ufficio,fabbrica,scuola,classe,libro,quaderno,penna,matita,zaino,lavagna,compiti,professore,amico,famiglia,mamma,papà,nonno,fratello,sorella,bambino,ragazzo,persona,medico,cuoco,poliziotto,pompiere,contadino,cane,gatto,cavallo,mucca,pecora,maiale,gallina,uccello,pesce,topo,coniglio,leone,elefante,serpente,farfalla,ape,formica,ragno,pane,pasta,pizza,riso,carne,formaggio,latte,uovo,mela,banana,arancia,pomodoro,patata,insalata,torta,gelato,cioccolato,caramella,acqua,succo,caffè,tè,piatto,bicchiere,forchetta,coltello,cucchiaio,frigorifero,forno,televisione,telefono,computer,schermo,tastiera,radio,lampada,orologio,chiave,borsa,scarpa,calzino,maglietta,giacca,cappello,ombrello,occhiali,anello,soldi,regalo,festa,gioco,palla,bambola,macchina,autobus,treno,aereo,nave,bicicletta,moto,camion,sole,luna,stella,cielo,nuvola,pioggia,neve,vento,tempesta,fuoco,ghiaccio,sasso,sabbia,ferro,legno,carta,plastica,vetro,colore,rosso,verde,blu,giallo,nero,bianco,mattina,sera,notte,giorno,estate,inverno,primavera,autunno,anno,ora,minuto,lavoro,viaggio,vacanza,sogno,paura,gioia,amore,rabbia,tristezza,silenzio,rumore,voce,parola,lettera,numero,storia,film,canzone,musica,ballo,sport,gara,squadra,medaglia,corsa,salto,mano,piede,testa,occhio,bocca,naso,cuore,sangue,dente,capelli,malattia,medicina,guerra,pace,re,castello,drago,mostro,fantasma,robot,pirata,tesoro,mappa,bandiera,spada,scudo,martello,chiodo,colla,forbici,corda,scala,sacco".split(",");
 const CH={
-  gemelli:['GIOCO &middot; GEMELLI DI PAROLA','Chi &egrave; il tuo gemello?','<b>1.</b> Ognuno scrive su un foglietto una parola &ldquo;del cuore&rdquo; o a caso, senza il nome. <b>2.</b> Si raccolgono e si scrivono tutte insieme qui sopra, separate da virgole. <b>3.</b> Nel pannello compare il gemello di ogni parola; &#128158; = gemelli perfetti, che si scelgono a vicenda. <b>4.</b> Ognuno cerca il suo gemello in aula: &egrave; seduto vicino o dall&rsquo;altra parte?'],
+  gemelli:['GIOCO &middot; GEMELLI DI PAROLA','Chi &egrave; il tuo gemello?','<b>1.</b> Ognuno scrive su un foglietto una parola a scelta, senza il nome. <b>2.</b> Si raccolgono e si scrivono tutte insieme qui sopra, separate da virgole. <b>3.</b> Nel pannello compare il gemello di ogni parola (la sua vicina pi&ugrave; stretta); <b>&harr; coppia perfetta</b> = due parole che si scelgono a vicenda. <b>4.</b> Ognuno cerca la sua parola e il suo gemello: ve lo aspettavate? Perch&eacute; l&rsquo;IA le avr&agrave; messe vicine?'],
   calamita:['GIOCO &middot; LA CALAMITA','Su quale calamita si attacca?','<b>1.</b> Le 8 parole colorate sono le <b>calamite</b>. <b>2.</b> Proponete una <b>parola nuova</b> e scommettete: a quale calamita si attaccher&agrave;? <b>3.</b> Aggiungetela: la parola prende il colore della calamita pi&ugrave; vicina. Pu&ograve; succedere che <b>si attacchi</b> &#129522;, che sia <b>contesa</b> tra due &#9878;&#65039; o che <b>non la attiri nessuna</b> &#127787;&#65039;. Previsione giusta = 1 punto.'],
   start:['COME SI GIOCA','Sfide sul funzionamento dell&rsquo;IA, non su di voi','Scegliete una sfida qui sopra. Prima di toccare o aggiungere una parola, <b>scrivete su un foglio la vostra previsione</b>; poi controllate. Quando l&rsquo;IA vi sorprende, cercate insieme una spiegazione.'],
   lingue:['SFIDA &middot; IA POLIGLOTTA','Stessa idea, lingue diverse','Italiano, inglese, spagnolo, francese mescolati. Toccate &laquo;cat&raquo;: chi &egrave; la sua vicina? E &laquo;dog&raquo;? E &laquo;manzana&raquo;? L&rsquo;IA mette vicine le parole che vogliono dire la stessa cosa, anche se non si somigliano per niente. E &laquo;chat&raquo;? In francese &egrave; &laquo;gatto&raquo;, in inglese &egrave; &laquo;chiacchierata&raquo;&hellip; Aggiungete parole in altre lingue che conoscete!'],
   doppi:['SFIDA &middot; DOPPI SENSI','Pesca, rete, tastiera&hellip;','Queste parole hanno due significati. Toccatele una alla volta: a quale significato le avvicina l&rsquo;IA? Poi aggiungete altre parole a doppio senso (<b>chiave, mouse, palla, pianta, lingua</b>&hellip;) insieme ai loro &ldquo;contesti&rdquo;.'],
   intruso:['SFIDA &middot; UMANI CONTRO IA','Chi &egrave; l&rsquo;intruso?','<b>1.</b> Sei parole: decidete voi l&rsquo;intruso e <b>perch&eacute;</b>. <b>2.</b> Premete &laquo;Chi &egrave; l&rsquo;intruso per l&rsquo;IA?&raquo;. <b>3.</b> Se la pensate come voi, bene; se no, perch&eacute;? Provate: <b>pinguino, aquila, passero, pappagallo, gallina, pipistrello</b> &middot; <b>Roma, Parigi, Madrid, Berlino, Londra, Milano</b> &middot; <b>violino, chitarra, pianoforte, flauto, tamburo, microfono</b>. Poi inventatene voi una per ingannare l&rsquo;IA.'],
-  ponti:['SFIDA &middot; COSTRUTTORI DI PONTI','Una parola a met&agrave; strada','Ci sono due gruppi: sport e musica. A squadre, cercate la parola che finisce <b>esattamente a met&agrave;</b>: toccandola, le due barre &ldquo;vicinanza ai gruppi&rdquo; devono essere quasi uguali. Vince il ponte pi&ugrave; equilibrato! (E perch&eacute; &laquo;canto&raquo; sta con lo sport?)'],
-  sport:['SFIDA &middot; PREVEDI E VERIFICA','Dove finir&agrave;?','Prima di aggiungere una parola (<b>pallone, sudore, medaglia, stadio</b>&hellip;) scrivete dove pensate che finir&agrave; e a chi sar&agrave; pi&ugrave; vicina. Poi aggiungetela: chi ci ha preso?'],
-  hobby:['SFIDA &middot; PREVEDI E VERIFICA','Dove finir&agrave;?','Aggiungete una parola a sorpresa (<b>pizza, Luna, robot, colla</b>&hellip;): a quale gruppo si avvicina? Siete d&rsquo;accordo con l&rsquo;IA? Dove secondo voi sbaglia?']
+  ponti:['GIOCO &middot; COSTRUTTORI DI PONTI','Una parola che tiene insieme sport e musica','Sulla riva <b>blu</b> c&rsquo;&egrave; lo sport, sulla riva <b>rosa</b> la musica. <b>1.</b> A squadre, cercate una parola che stia vicina a <b>tutte e due</b> le rive (es. <b>ritmo, stadio, palco, tamburo</b>&hellip;). <b>2.</b> Aggiungetela: l&rsquo;IA misura i due <b>piloni</b>, da 0 a 100. <b>3.</b> Un ponte regge quanto il suo pilone pi&ugrave; debole: quello &egrave; il punteggio. <b>4.</b> Vince il ponte pi&ugrave; forte della classifica. Quando un ponte crolla, chiedetevi perch&eacute;.'],
+  segreta:['GIOCO &middot; PAROLA SEGRETA','Acqua, fuochino, fuoco!','L&rsquo;IA ha scelto una parola segreta: &egrave; il punto <b>?</b> nello spazio. <b>1.</b> A turno, ogni squadra propone una parola. <b>2.</b> L&rsquo;IA dice quanto scotta: <b>0&deg;</b> = una parola qualunque, <b>100&deg;</b> = vicinissima (oltre 100 scotta davvero). <b>3.</b> Usate le parole pi&ugrave; calde per avvicinarvi. Vince chi la trova! Se siete bloccati, chiedete un <b>aiutino</b>.']
 };
 const COLORS=["#f472b6","#38bdf8","#facc15","#4ade80","#fb923c","#a78bfa","#f87171","#2dd4bf","#c084fc","#fbbf24"];
 let ANCH=null; let CURCH="start", REVEAL=false; // le "calamite": se ci sono, i colori sono la calamita più vicina
+let FAM=null;    // costruttori di ponti: le due rive
+let SECRET=null; // parola segreta: {w,m50,m99,found,hint,last}
+let VV=null;     // vettori del vocabolario di riferimento
+const NEUTRO="#c4b5fd", BLU="#38bdf8", ROSA="#f472b6", GIALLO="#facc15";
 const $=id=>document.getElementById(id);
 const status=$("status"), inp=$("inp"), addBtn=$("add"), chips=$("chips"), legend=$("legend"), panel=$("panel"), chal=$("challenge"), cv=$("cv"), ctx=cv.getContext("2d");
 let ext=null; const cache=new Map();
-let words=[], vecs=[], P=[], S=[], groups=[], gNames=[];
+let words=[], vecs=[], P=[], S=[], groups=null;
 let yaw=0.6, pitch=-0.35, zoom=1, autoRot=true, showAll=false, sel=-1;
 let SMIN=0,SMAX=1;
 const rel=s=>SMAX>SMIN?(s-SMIN)/(SMAX-SMIN):1;
@@ -165,58 +169,40 @@ function pca3(V){
   const m=Math.max(...out.map(p=>Math.hypot(...p)))||1;
   return out.map(p=>p.map(x=>x/m));
 }
-function agg(V,k){
-  let cl=V.map((_,i)=>[i]);
-  const sim=(A,B)=>{let t=0;A.forEach(a=>B.forEach(b=>t+=dot(V[a],V[b])));return t/(A.length*B.length);};
-  while(cl.length>k){let best=-9,bi=0,bj=1;
-    for(let i=0;i<cl.length;i++)for(let j=i+1;j<cl.length;j++){const t=sim(cl[i],cl[j]);if(t>best){best=t;bi=i;bj=j;}}
-    cl[bi]=cl[bi].concat(cl[bj]);cl.splice(bj,1);}
-  return cl;
-}
-function silhouette(V,cl){
-  const g=[];cl.forEach((c,ci)=>c.forEach(i=>g[i]=ci));let tot=0;
-  V.forEach((v,i)=>{const d=j=>1-dot(v,V[j]);const own=cl[g[i]].filter(j=>j!==i);if(!own.length)return;
-    const a=own.reduce((s,j)=>s+d(j),0)/own.length;let b=9;
-    cl.forEach((c,ci)=>{if(ci!==g[i])b=Math.min(b,c.reduce((s,j)=>s+d(j),0)/c.length);});
-    tot+=(b-a)/Math.max(a,b);});
-  return tot/V.length;
-}
-function kmedoids(V,k){
-  const n=V.length, d=(i,j)=>1-dot(V[i],V[j]);
-  // primo centro: la parola più "tipica"; poi la più lontana da quelli già scelti
-  let c0=0,bm=-9; for(let i=0;i<n;i++){let m=0;for(let j=0;j<n;j++)m+=dot(V[i],V[j]);if(m>bm){bm=m;c0=i;}}
-  const med=[c0];
-  while(med.length<k){let bi=-1,bd=-1;for(let i=0;i<n;i++){if(med.includes(i))continue;const m=Math.min(...med.map(c=>d(i,c)));if(m>bd){bd=m;bi=i;}}med.push(bi);}
-  let g=new Array(n);
-  for(let it=0;it<8;it++){
-    for(let i=0;i<n;i++){let bc=0,bv=9;med.forEach((c,ci)=>{const x=d(i,c);if(x<bv){bv=x;bc=ci;}});g[i]=bc;}
-    let changed=false;
-    med.forEach((c,ci)=>{const mem=[...Array(n).keys()].filter(i=>g[i]===ci);if(!mem.length)return;
-      let bi=c,bs=9;mem.forEach(i=>{const t=mem.reduce((s2,j)=>s2+d(i,j),0);if(t<bs){bs=t;bi=i;}});if(bi!==c){med[ci]=bi;changed=true;}});
-    if(!changed)break;}
-  const cl=med.map((_,ci)=>[...Array(n).keys()].filter(i=>g[i]===ci)).filter(c=>c.length);
-  return cl;
-}
-function kgroups(V){
-  const n=V.length; if(n<4)return V.map(()=>0);
-  let best=null,bs=-9;
-  for(let k=2;k<=Math.min(5,Math.floor(n/2));k++){const cl=kmedoids(V,k); if(cl.some(c=>c.length<2))continue; const s=silhouette(V,cl); if(s>bs){bs=s;best=cl;}}
-  if(!best) best=[[...Array(n).keys()]];
-  best.sort((a,b)=>b.length-a.length);
-  const g=new Array(n);best.forEach((c,ci)=>c.forEach(i=>g[i]=ci));return g;
-}
 function anchorGroups(){
   // ogni parola prende il colore della calamita più vicina (le calamite hanno il loro colore)
   const idx=ANCH.map(a=>words.indexOf(a));
   return words.map((w,i)=>{const own=idx.indexOf(i); if(own>=0)return own; let bc=0,bv=-9; idx.forEach((j,ci)=>{if(S[i][j]>bv){bv=S[i][j];bc=ci;}}); return bc;});
 }
-function groupNames(){
-  const ng=Math.max(...groups)+1, names=[];
-  for(let c=0;c<ng;c++){const mem=words.map((_,i)=>i).filter(i=>groups[i]===c);
-    let bi=mem[0],bs=-9; mem.forEach(i=>{const m=mem.reduce((s,j)=>s+(j===i?0:S[i][j]),0)/Math.max(1,mem.length-1); if(m>bs){bs=m;bi=i;}});
-    names.push(words[bi]);}
-  return names;
+const quant=(arr,q)=>{const a=arr.slice().sort((x,y)=>x-y);return a[Math.floor(q*(a.length-1))];};
+async function vocab(){ if(!VV){status.innerHTML="Preparo il gioco&hellip;"; VV=await embed(VOCAB);} return VV; }
+/* --- costruttori di ponti --- */
+const famSim=(F,v)=>F.reduce((t,x)=>t+dot(x,v),0)/F.length;
+async function startPonti(){
+  const V=await vocab(); const vA=await embed(RIVE.A), vB=await embed(RIVE.B);
+  const sa=V.map(v=>famSim(vA,v)), sb=V.map(v=>famSim(vB,v));
+  FAM={vA,vB,a50:quant(sa,.5),a99:quant(sa,.99),b50:quant(sb,.5),b99:quant(sb,.99)};
 }
+const isRiva=w=>RIVE.A.includes(w)?1:RIVE.B.includes(w)?2:0;
+function piloni(i){ // [pilone sport, pilone musica, forza] da 0 a 100
+  const v=vecs[i], c=x=>Math.max(0,Math.min(100,Math.round(x)));
+  const a=c(100*(famSim(FAM.vA,v)-FAM.a50)/(FAM.a99-FAM.a50)), b=c(100*(famSim(FAM.vB,v)-FAM.b50)/(FAM.b99-FAM.b50));
+  return [a,b,Math.min(a,b)];
+}
+/* --- parola segreta --- */
+async function startSecret(w){
+  const V=await vocab();
+  if(!w){const pool=SEGRETE.filter(x=>!SECRET||x!==SECRET.w); w=pool[Math.floor(Math.random()*pool.length)];}
+  w=w.trim().toLowerCase(); const [v]=await embed([w]);
+  const sims=V.map((x,i)=>VOCAB[i]===w?null:dot(x,v)).filter(x=>x!==null);
+  let near="",bs=-9; V.forEach((x,i)=>{if(VOCAB[i]!==w&&!w.includes(VOCAB[i])&&!VOCAB[i].includes(w)){const t=dot(x,v);if(t>bs){bs=t;near=VOCAB[i];}}});
+  SECRET={w,m50:quant(sims,.5),m99:quant(sims,1),found:false,hint:0,near,last:""};
+}
+const sIdx=()=>SECRET?words.indexOf(SECRET.w):-1;
+const nm=i=>(SECRET&&i===sIdx()&&!SECRET.found)?"?":words[i];
+function temp(i){const si=sIdx(); if(i===si)return 999; return Math.round(100*(S[i][si]-SECRET.m50)/(SECRET.m99-SECRET.m50));}
+function tempLab(t){return t>=999?"&#127881; trovata!":t>=90?"&#128293; bollente":t>=70?"caldo":t>=45?"tiepido":t>=20?"fresco":"&#129482; freddo";}
+function tempCol(t){const x=Math.max(0,Math.min(1,t/110));const a=[56,189,248],b=[239,68,68];return "rgb("+a.map((v,k)=>Math.round(v+(b[k]-v)*x)).join(",")+")";}
 
 /* ---------- model ---------- */
 async function load(){
@@ -238,7 +224,8 @@ async function embed(list){
 }
 async function setWords(list){
   const nw=[...new Set(list.map(w=>w.trim().toLowerCase()).filter(Boolean))].slice(0,40);
-  if(!nw.length){words=[];vecs=[];P=[];S=[];groups=[];gNames=[];sel=-1;ANCH=null;renderChips();renderPanel();return;}
+  if(SECRET){const k=nw.indexOf(SECRET.w); if(k>=0)nw.splice(k,1); nw.push(SECRET.w);}
+  if(!nw.length){words=[];vecs=[];P=[];S=[];sel=-1;ANCH=null;renderChips();renderPanel();return;}
   status.innerHTML="Penso&hellip;";
   const nv=await embed(nw);
   const nS=nv.map(a=>nv.map(b=>dot(a,b)));
@@ -246,15 +233,24 @@ async function setWords(list){
   const nP=nw.length>=3?pca3(nv):nw.map((_,i)=>[i?0.6:-0.6,0,0]);
   words=nw;vecs=nv;S=nS;P=nP;SMIN=mn;SMAX=mx;sel=-1;REVEAL=false;
   if(ANCH && !ANCH.every(a=>nw.includes(a))) ANCH=null;
-  if(ANCH){ groups=anchorGroups(); gNames=ANCH.slice(); }
-  else { groups=kgroups(nv); gNames=groupNames(); }
-  status.innerHTML="<b>"+words.length+" parole</b> nello spazio. Trascina per ruotare, tocca una parola.";
+  groups=ANCH?anchorGroups():null;
+  status.innerHTML=SECRET?"<b>"+(words.length-1)+" tentativi</b>. Il punto <b>?</b> &egrave; la parola segreta.":"<b>"+words.length+" parole</b> nello spazio. Trascina per ruotare, tocca una parola.";
   renderChips(); renderPanel();
 }
 async function addFromInput(){
   const add=inp.value.split(",").map(s=>s.trim()).filter(Boolean);
   if(!add.length)return; inp.value="";
-  addBtn.disabled=true; await setWords((CURCH==="intruso"&&add.length>=3)?add:words.concat(add)); addBtn.disabled=false; inp.focus();
+  addBtn.disabled=true;
+  if(SECRET){ const g=add.map(w=>w.toLowerCase());
+    if(g.includes(SECRET.w)&&!SECRET.found){SECRET.found=true; showBanner("&#127881; Trovata! La parola segreta era &laquo;"+esc(SECRET.w)+"&raquo;");}
+    SECRET.last=g[g.length-1];
+    await setWords(words.concat(add)); addBtn.disabled=false; inp.focus();
+    if(!SECRET.found&&add.length===1){const i=words.indexOf(SECRET.last); if(i>=0){const t=temp(i); showBanner("&laquo;"+esc(words[i])+"&raquo;: "+Math.max(0,t)+"&deg; &middot; "+tempLab(t));}}
+    return; }
+  await setWords((CURCH==="intruso"&&add.length>=3)?add:words.concat(add)); addBtn.disabled=false; inp.focus();
+  if(FAM&&add.length===1){const i=words.indexOf(add[0].toLowerCase()); if(i>=0&&!isRiva(words[i])){const [a,b,f]=piloni(i); selectWord(i);
+    showBanner(f>=50?"&#127753; &laquo;"+esc(words[i])+"&raquo; regge: ponte da "+f+" (sport "+a+", musica "+b+")":"&#128165; &laquo;"+esc(words[i])+"&raquo; crolla: il pilone "+(a<b?"sport":"musica")+" &egrave; debole ("+f+")");}
+    return;}
   if(add.length===1){const i=words.indexOf(add[0].toLowerCase()); if(i>=0&&words.length>1){
     let bj=-1,bs=-9; words.forEach((w,j)=>{if(j!==i&&(!ANCH||ANCH.includes(w))&&S[i][j]>bs){bs=S[i][j];bj=j;}});
     selectWord(i);
@@ -268,20 +264,28 @@ async function addFromInput(){
 }
 
 /* ---------- UI ---------- */
-const col=i=>COLORS[groups[i]%COLORS.length];
+function col(i){
+  if(ANCH&&groups) return COLORS[groups[i]%COLORS.length];
+  if(FAM){const r=isRiva(words[i]); return r===1?BLU:r===2?ROSA:GIALLO;}
+  if(SECRET){ if(i===sIdx()) return "#ffffff"; return tempCol(temp(i)); }
+  return NEUTRO;
+}
 function renderChips(){
   chips.innerHTML="";
-  words.forEach((w,i)=>{const c=document.createElement("span");c.className="chip"+(i===sel?" sel":"");c.style.background=col(i);
+  words.forEach((w,i)=>{if(SECRET&&i===sIdx())return; const c=document.createElement("span");c.className="chip"+(i===sel?" sel":"");c.style.background=col(i);
     c.innerHTML=esc(w)+' <b title="togli">&times;</b>';
     c.onclick=()=>selectWord(i===sel?-1:i);
     c.querySelector("b").onclick=e=>{e.stopPropagation();setWords(words.filter((_,j)=>j!==i));};
     chips.appendChild(c);});
   if(ANCH){ legend.innerHTML='<span>Ogni calamita ha il suo colore: le parole nuove prendono il colore della calamita pi&ugrave; vicina.</span>'; }
-  else legend.innerHTML = words.length>=4 ? '<span>Colori = gruppi trovati dall&rsquo;IA:</span>'+gNames.map((g,ci)=>'<span><i style="background:'+COLORS[ci%COLORS.length]+'"></i>il gruppo di &laquo;'+esc(g)+'&raquo; ('+groups.filter(x=>x===ci).length+')</span>').join('') : '';
+  else if(FAM) legend.innerHTML='<span><i style="background:'+BLU+'"></i>riva dello sport</span><span><i style="background:'+ROSA+'"></i>riva della musica</span><span><i style="background:'+GIALLO+'"></i>i vostri ponti</span>';
+  else if(SECRET) legend.innerHTML='<span><i style="background:'+tempCol(0)+'"></i>freddo</span><span><i style="background:'+tempCol(55)+'"></i>tiepido</span><span><i style="background:'+tempCol(110)+'"></i>bollente</span><span><i style="background:#fff;border:1px solid #999"></i>? la parola segreta</span>';
+  else legend.innerHTML='';
 }
 const pct=x=>Math.round(Math.max(0,Math.min(1,rel(x)))*100);
+function vbars(list){return list.map(([w,v,c,extra])=>'<div class="row"><span class="w">'+w+'</span><span class="track"><span class="fill" style="width:'+Math.max(0,Math.min(100,v))+'%;'+(c?'background:'+c:'')+'"></span></span><span class="n" style="flex-basis:'+(extra?'auto':'34px')+'">'+(extra||v)+'</span></div>').join("");}
 function bars(list){return list.map(([w,s,c])=>'<div class="row"><span class="w">'+esc(w)+'</span><span class="track"><span class="fill" style="width:'+pct(s)+'%;'+(c?'background:'+c:'')+'"></span></span><span class="n">'+pct(s)+'</span></div>').join("");}
-function selectWord(i){sel=i;renderChips();renderPanel();}
+function selectWord(i){if(SECRET&&i>=0&&i===sIdx()&&!SECRET.found)i=-1; sel=i;renderChips();renderPanel();}
 function colorOf(x,mx){const t=Math.sqrt(Math.min(1,Math.abs(x)/(mx||1)));const base=x>=0?[220,38,38]:[37,99,235];return "rgb("+base.map(b=>Math.round(255+(b-255)*t)).join(",")+")";}
 function barcode(c,v,mx){
   const r=c.getBoundingClientRect(),d=window.devicePixelRatio||1; c.width=Math.max(1,r.width*d); c.height=Math.max(1,r.height*d);
@@ -311,27 +315,23 @@ function twins(){
   if(words.length<4)return "";
   const nn=words.map((_,i)=>{let bj=-1,bs=-9;words.forEach((_,j)=>{if(j!==i&&S[i][j]>bs){bs=S[i][j];bj=j;}});return bj;});
   const rows=words.map((w,i)=>{const j=nn[i],mutual=nn[j]===i;
-    return '<div class="row" style="cursor:pointer" data-i="'+i+'"><span class="w" style="flex:0 0 auto;max-width:42%"><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+col(i)+';margin-right:5px"></i>'+esc(w)+'</span><span style="color:var(--mut)">&rarr;</span><span style="font-weight:700">'+esc(words[j])+'</span>'+(mutual?' <span title="gemelli perfetti">&#128158;</span>':'')+'</div>';}).join("");
+    return '<div class="row" style="cursor:pointer" data-i="'+i+'"><span class="w" style="flex:0 0 auto;max-width:42%"><span style="font-weight:700">'+esc(w)+'</span></span><span style="color:var(--mut)">'+(mutual?'&harr;':'&rarr;')+'</span><span style="font-weight:700">'+esc(words[j])+'</span>'+(mutual?' <span class="small" style="color:var(--acc);font-weight:800">coppia perfetta</span>':'')+'</div>';}).join("");
   const nm=nn.filter((j,i)=>nn[j]===i).length/2;
-  return '<h3 style="margin-top:14px">Il gemello di ogni parola</h3><div class="small">'+(nm?'<b>'+nm+'</b> coppie di gemelli perfetti &#128158;':'Nessun gemello perfetto, per ora')+'. Tocca una riga per vederla nello spazio.</div><div id="twins" style="max-height:260px;overflow:auto;margin-top:6px;border-top:1px solid var(--line);padding-top:4px">'+rows+'</div>';
+  return '<h3 style="margin-top:14px">Il gemello di ogni parola</h3><div class="small">'+(nm?'<b>'+nm+'</b> '+(nm>1?'coppie perfette':'coppia perfetta')+' (&harr;)':'Nessuna coppia perfetta, per ora')+'. Tocca una riga per vederla nello spazio.</div><div id="twins" style="max-height:260px;overflow:auto;margin-top:6px;border-top:1px solid var(--line);padding-top:4px">'+rows+'</div>';
 }
 function renderPanel(){
-  if(words.length<3){panel.innerHTML='<span class="pill">COSA VEDE L&rsquo;IA</span><h3>Servono almeno tre parole</h3><div class="small">Poi tocca una parola nello spazio per vedere le pi&ugrave; vicine.</div>';return;}
+  if(words.length<3&&!SECRET&&!FAM){panel.innerHTML='<span class="pill">COSA VEDE L&rsquo;IA</span><h3>Servono almeno tre parole</h3><div class="small">Poi tocca una parola nello spazio per vedere le pi&ugrave; vicine.</div>';return;}
   if(sel>=0){
-    const list=words.map((w,j)=>[w,S[sel][j],col(j)]).filter((_,j)=>j!==sel).sort((a,b)=>b[1]-a[1]);
+    const list=words.map((w,j)=>[nm(j),S[sel][j],col(j)]).filter((_,j)=>j!==sel).sort((a,b)=>b[1]-a[1]);
     let html='<span class="pill">LE PI&Ugrave; VICINE A</span><h3>&laquo;'+esc(words[sel])+'&raquo;</h3>'+bars(list.slice(0,6));
-    const ng=gNames.length;
+    if(FAM&&!isRiva(words[sel])){const [a,b,f]=piloni(sel);
+      html+='<h3 style="margin-top:12px">I due piloni del ponte</h3>'+vbars([["pilone sport",a,BLU],["pilone musica",b,ROSA]])+'<span class="badge">'+(f>=50?'&#127753; Il ponte regge: '+f:'&#128165; Il ponte crolla: '+f)+'</span>';
+    } else if(SECRET&&!SECRET.found){const t=temp(sel); html+='<h3 style="margin-top:12px">Quanto scotta</h3>'+vbars([["&laquo;"+esc(words[sel])+"&raquo;",t,tempCol(t),Math.max(0,t)+"&deg;"]]);}
     if(ANCH){
       const aff=ANCH.map((a,ci)=>[a,S[sel][words.indexOf(a)],COLORS[ci%COLORS.length]]).filter(x=>x[0]!==words[sel]).sort((x,y)=>y[1]-x[1]);
       html+='<h3 style="margin-top:12px">Quanto la tira ogni calamita</h3>'+bars(aff);
-    } else if(ng>=2){
-      const aff=gNames.map((g,ci)=>{const mem=words.map((_,j)=>j).filter(j=>groups[j]===ci&&j!==sel); if(!mem.length)return [g,SMIN,COLORS[ci%COLORS.length]];
-        return ["gruppo di "+g, mem.reduce((s,j)=>s+S[sel][j],0)/mem.length, COLORS[ci%COLORS.length]];});
-      html+='<h3 style="margin-top:12px">Vicinanza ai gruppi</h3>'+bars(aff);
-      const v=aff.map(a=>pct(a[1])).sort((a,b)=>b-a);
-      if(v[0]-v[1]<=8) html+='<span class="badge">&#127753; Ponte quasi perfetto: '+(v[0]-v[1])+' punti di differenza</span>';
     }
-    const nb=list[0]?words.indexOf(list[0][0]):-1;
+    let nb=-1,nbs=-9; words.forEach((_,j)=>{if(j!==sel&&!(SECRET&&j===sIdx()&&!SECRET.found)&&S[sel][j]>nbs){nbs=S[sel][j];nb=j;}});
     const f2=x=>(x>=0?"+":"\u2212")+Math.abs(x).toFixed(2).replace(".",",");
     html+='<h3 style="margin-top:12px">I numeri di &laquo;'+esc(words[sel])+'&raquo;</h3><div class="small">I primi 8 dei suoi '+vecs[sel].length+' numeri:</div>'+
       '<div class="nums">'+vecs[sel].slice(0,8).map(f2).join(" ")+' &hellip;</div>'+
@@ -341,6 +341,38 @@ function renderPanel(){
     const mx=Math.max(...vecs[sel].map(Math.abs),...(nb>=0?vecs[nb].map(Math.abs):[0]));
     barcode($("bc1"),vecs[sel],mx); if(nb>=0)barcode($("bc2"),vecs[nb],mx);
     zoomPair=[sel,nb]; ["bc1","bc2","zb"].forEach(id=>{const e=$(id); if(e)e.onclick=openZoom;});
+    return;
+  }
+  if(SECRET){
+    const si=sIdx(), g=words.map((w,i)=>i).filter(i=>i!==si).map(i=>[i,temp(i)]).sort((a,b)=>b[1]-a[1]);
+    const H=["Ha "+SECRET.w.length+" lettere","Comincia per &laquo;"+esc(SECRET.w[0].toUpperCase())+"&raquo;","&Egrave; vicina a &laquo;"+esc(SECRET.near)+"&raquo;"];
+    panel.innerHTML='<span class="pill">PAROLA SEGRETA</span>'+
+      (SECRET.found?'<div style="font-size:20px;font-weight:800;margin:6px 0 10px">&#127881; Era &laquo;'+esc(SECRET.w)+'&raquo;</div>':'<h3>Quanto scottano i vostri tentativi</h3>')+
+      (g.length?vbars(g.map(([i,t])=>[esc(words[i])+(words[i]===SECRET.last?' &#9664;':''),t,tempCol(t),Math.max(0,t)+'&deg;'])):'<div class="small">Ancora nessun tentativo: scrivete una parola qui sopra.</div>')+
+      (SECRET.hint&&!SECRET.found?'<div class="small" style="margin-top:8px;color:var(--ink)"><b>Aiutini:</b> '+H.slice(0,SECRET.hint).join(' &middot; ')+'</div>':'')+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">'+
+      (!SECRET.found&&SECRET.hint<3?'<button id="sHint">&#128161; Aiutino</button>':'')+
+      (!SECRET.found?'<button id="sGive">Mi arrendo</button>':'')+
+      '<button id="sNew">Nuova parola</button><button id="sOwn">La sceglie l&rsquo;insegnante</button></div>'+
+      '<div class="small" style="margin-top:8px">0&deg; = una parola qualunque &middot; 100&deg; = vicinissima &middot; oltre 100 scotta davvero. Tocca un tentativo per vedere i suoi numeri.</div>';
+    const on=(id,f)=>{const e=$(id); if(e)e.onclick=f;};
+    on("sHint",()=>{SECRET.hint++;renderPanel();});
+    on("sGive",()=>{SECRET.found=true;renderChips();renderPanel();showBanner("La parola segreta era &laquo;"+esc(SECRET.w)+"&raquo;");});
+    on("sNew",async()=>{await startSecret();await setWords([]);inp.focus();});
+    on("sOwn",async()=>{const w=prompt("Parola segreta (non farla vedere!):"); if(w&&w.trim()){await startSecret(w);await setWords([]);inp.focus();}});
+    return;
+  }
+  if(FAM){
+    const tr=words.map((w,i)=>i).filter(i=>!isRiva(words[i])).map(i=>[i,...piloni(i)]).sort((a,b)=>b[3]-a[3]);
+    panel.innerHTML='<span class="pill">CLASSIFICA DEI PONTI</span>'+
+      (tr.length?'<div class="small" style="margin-bottom:6px">Punteggio = il pilone pi&ugrave; debole. Sotto 50 il ponte crolla.</div>'+
+        tr.map(([i,a,b,f],k)=>'<div class="row" style="cursor:pointer" data-i="'+i+'"><span class="w" style="flex:0 0 26%"><b>'+(k+1)+'.</b> '+esc(words[i])+'</span>'+
+          '<span class="track" title="sport"><span class="fill" style="width:'+a+'%;background:'+BLU+'"></span></span>'+
+          '<span class="track" title="musica"><span class="fill" style="width:'+b+'%;background:'+ROSA+'"></span></span>'+
+          '<span class="n">'+(f>=50?f:'&#128165;'+f)+'</span></div>').join("")
+        :'<h3>Nessun ponte, per ora</h3><div class="small">Scrivete qui sopra una parola che stia bene sia con lo sport sia con la musica.</div>')+
+      '<div class="small" style="margin-top:8px">Barra blu = pilone sport, barra rosa = pilone musica. Tocca un ponte per vederlo nello spazio.</div>';
+    panel.querySelectorAll('.row[data-i]').forEach(r=>r.onclick=()=>selectWord(+r.dataset.i));
     return;
   }
   if(CURCH==="intruso"&&words.length>=3){
@@ -356,7 +388,7 @@ function renderPanel(){
   panel.innerHTML='<span class="pill">COSA VEDE L&rsquo;IA</span>'+
     '<h3>Coppia pi&ugrave; vicina</h3>'+bars([[words[best[1]]+" + "+words[best[2]],best[0]]])+
     '<h3 style="margin-top:12px">Coppia pi&ugrave; lontana</h3>'+bars([[words[worst[1]]+" + "+words[worst[2]],worst[0]]])+
-    '<div class="small" style="margin-top:8px">Tocca una parola nello spazio per vedere le sue vicine e quanto &egrave; vicina a ogni gruppo.</div>'+twins();
+    '<div class="small" style="margin-top:8px">Tocca una parola nello spazio per vedere le sue vicine.</div>'+twins();
   panel.querySelectorAll('#twins .row').forEach(r=>r.onclick=()=>selectWord(+r.dataset.i));
 }
 
@@ -382,7 +414,7 @@ function drawFrame(){
   const n=words.length;
   for(let i=0;i<n;i++){
     const near=S[i].map((s,j)=>[s,j]).filter(x=>x[1]!==i).sort((a,b)=>b[0]-a[0]).slice(0,2).map(x=>x[1]);
-    for(let j=0;j<n;j++){ if(j===i)continue;
+    for(let j=0;j<n;j++){ if(j===i)continue; if(SECRET&&(i===sIdx()||j===sIdx()))continue;
       const isNear=near.includes(j); if(!showAll&&!isNear&&sel!==i)continue; if(j<i&&!(sel===i||sel===j)&&showAll)continue;
       const s=S[i][j], a=Math.min(1,Math.max(.06,rel(s)));
       const hi=(sel===i||sel===j);
@@ -392,14 +424,22 @@ function drawFrame(){
       if(hi&&sel===i){const mx=(pts[i].x+pts[j].x)/2,my=(pts[i].y+pts[j].y)/2;ctx.font="800 11px ui-monospace,Menlo,monospace";ctx.fillStyle="rgba(250,204,21,.95)";ctx.fillText(pct(s),mx+3,my-3);}
     }
   }
-  const order=[...Array(n).keys()].sort((a,b)=>pts[b].z-pts[a].z);
+  if(SECRET&&n>1){const si=sIdx(); for(let i=0;i<n;i++){if(i===si)continue; const t=temp(i);
+    ctx.strokeStyle=tempCol(t); ctx.globalAlpha=.35+.6*Math.max(0,Math.min(1,t/100)); ctx.lineWidth=1+3*Math.max(0,Math.min(1,t/100));
+    ctx.beginPath();ctx.moveTo(pts[si].x,pts[si].y);ctx.lineTo(pts[i].x,pts[i].y);ctx.stroke(); ctx.globalAlpha=1;}}
+  const hid=(SECRET&&!SECRET.found)?sIdx():-1;
+  const order=[...Array(n).keys()].sort((a,b)=>(a===hid)-(b===hid)||pts[b].z-pts[a].z);
   order.forEach(i=>{const p=pts[i],r=5+7*p.f;
+    if(i===hid){ctx.beginPath();ctx.arc(p.x,p.y,r+7,0,Math.PI*2);ctx.fillStyle="#fff";ctx.fill();ctx.lineWidth=3;ctx.strokeStyle=GIALLO;ctx.stroke();
+      ctx.fillStyle="#16133a";ctx.font="900 "+Math.round(14+6*p.f)+"px system-ui,sans-serif";ctx.textAlign="center";ctx.fillText("?",p.x,p.y+Math.round(5+2*p.f));ctx.textAlign="left";return;}
     ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fillStyle=col(i);ctx.fill();
     ctx.lineWidth=sel===i?4:2;ctx.strokeStyle=sel===i?"#fff":"rgba(0,0,0,.35)";ctx.stroke();
     ctx.font=(sel===i?"800 ":"700 ")+Math.round(12+5*p.f)+"px system-ui,-apple-system,Segoe UI,Roboto,sans-serif";
-    ctx.lineWidth=4;ctx.strokeStyle="rgba(22,19,58,.85)";ctx.strokeText(words[i],p.x+r+5,p.y+4);
-    ctx.fillStyle="#fff";ctx.fillText(words[i],p.x+r+5,p.y+4);
+    const lab=nm(i);
+    ctx.lineWidth=4;ctx.strokeStyle="rgba(22,19,58,.85)";ctx.strokeText(lab,p.x+r+5,p.y+4);
+    ctx.fillStyle="#fff";ctx.fillText(lab,p.x+r+5,p.y+4);
   });
+  if(n===1&&SECRET){ctx.fillStyle="rgba(255,255,255,.6)";ctx.font="600 16px system-ui,sans-serif";ctx.textAlign="center";ctx.fillText("Il punto ? è la parola segreta: provate a indovinarla!",W/2,H-40);ctx.textAlign="left";}
   if(!n){ctx.fillStyle="rgba(255,255,255,.6)";ctx.font="600 16px system-ui,sans-serif";ctx.textAlign="center";ctx.fillText("Lo spazio è vuoto: scegli una sfida o aggiungi delle parole!",W/2,H/2);ctx.textAlign="left";}
 }
 /* interaction */
@@ -415,7 +455,14 @@ $("tRot").onclick=e=>{autoRot=!autoRot;e.target.classList.toggle("on",autoRot);}
 $("tAll").onclick=e=>{showAll=!showAll;e.target.classList.toggle("on",showAll);};
 addBtn.onclick=addFromInput;
 inp.addEventListener("keydown",e=>{if(e.key==="Enter")addFromInput();});
-document.querySelectorAll("button.pre").forEach(b=>b.onclick=async()=>{const p=b.dataset.p; if(p==="clear"){setChallenge("start");return setWords([]);} if(p==="gemelli"){setChallenge("gemelli");await setWords([]);inp.focus();return;} setChallenge(p); ANCH=(p==="calamita")?PRESETS[p].slice():null; await setWords(PRESETS[p]);});
+document.querySelectorAll("button.pre").forEach(b=>b.onclick=async()=>{const p=b.dataset.p; ANCH=null; FAM=null; SECRET=null;
+  if(p==="clear"){setChallenge("start");return setWords([]);}
+  setChallenge(p);
+  if(p==="gemelli"){await setWords([]);inp.focus();return;}
+  if(p==="segreta"){await startSecret();await setWords([]);inp.focus();return;}
+  if(p==="ponti"){await startPonti();await setWords(PRESETS.ponti);inp.focus();return;}
+  if(p==="calamita")ANCH=PRESETS[p].slice();
+  await setWords(PRESETS[p]);});
 if(/embed/.test(location.search)){document.querySelectorAll(".kick,h1,.sub").forEach(e=>e.style.display="none");}
 setChallenge("start"); renderPanel();
 resize(); draw(); load();
