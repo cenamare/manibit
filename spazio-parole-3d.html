@@ -126,7 +126,7 @@ const PRESETS={
 };
 const CH={
   gemelli:['GIOCO &middot; GEMELLI DI PAROLA','Chi &egrave; il tuo gemello?','<b>1.</b> Ognuno scrive su un foglietto una parola &ldquo;del cuore&rdquo; o a caso, senza il nome. <b>2.</b> Si raccolgono e si scrivono tutte insieme qui sopra, separate da virgole. <b>3.</b> Nel pannello compare il gemello di ogni parola; &#128158; = gemelli perfetti, che si scelgono a vicenda. <b>4.</b> Ognuno cerca il suo gemello in aula: &egrave; seduto vicino o dall&rsquo;altra parte?'],
-  calamita:['GIOCO &middot; LA CALAMITA','Su quale parola si attacca?','<b>1.</b> Sul tabellone ci sono alcuni interessi (cambiateli con quelli della classe). <b>2.</b> Ogni squadra sceglie in segreto una <b>parola nuova</b> legata a un interesse (es. <i>skate, manga, pallone, chitarra elettrica</i>) e scrive su un foglio su quale parola del tabellone pensa che <b>si attaccher&agrave;</b>. <b>3.</b> A turno si aggiunge la parola: la calamita la rivela. Previsione giusta = 1 punto. Due giri e si contano i punti!'],
+  calamita:['GIOCO &middot; LA CALAMITA','Su quale calamita si attacca?','<b>1.</b> Le 8 parole colorate sono le <b>calamite</b>. <b>2.</b> Proponete una <b>parola nuova</b> e scommettete: a quale calamita si attaccher&agrave;? <b>3.</b> Aggiungetela: la parola prende il colore della calamita pi&ugrave; vicina. Pu&ograve; succedere che <b>si attacchi</b> &#129522;, che sia <b>contesa</b> tra due &#9878;&#65039; o che <b>non la attiri nessuna</b> &#127787;&#65039;. Previsione giusta = 1 punto.'],
   start:['COME SI GIOCA','Sfide sul funzionamento dell&rsquo;IA, non su di voi','Scegliete una sfida qui sopra. Prima di toccare o aggiungere una parola, <b>scrivete su un foglio la vostra previsione</b>; poi controllate. Quando l&rsquo;IA vi sorprende, cercate insieme una spiegazione.'],
   lingue:['SFIDA &middot; IA POLIGLOTTA','Stessa idea, lingue diverse','Italiano, inglese, spagnolo, francese mescolati. Toccate &laquo;cat&raquo;: chi &egrave; la sua vicina? E &laquo;dog&raquo;? E &laquo;manzana&raquo;? L&rsquo;IA mette vicine le parole che vogliono dire la stessa cosa, anche se non si somigliano per niente. E &laquo;chat&raquo;? In francese &egrave; &laquo;gatto&raquo;, in inglese &egrave; &laquo;chiacchierata&raquo;&hellip; Aggiungete parole in altre lingue che conoscete!'],
   doppi:['SFIDA &middot; DOPPI SENSI','Pesca, rete, tastiera&hellip;','Queste parole hanno due significati. Toccatele una alla volta: a quale significato le avvicina l&rsquo;IA? Poi aggiungete altre parole a doppio senso (<b>chiave, mouse, palla, pianta, lingua</b>&hellip;) insieme ai loro &ldquo;contesti&rdquo;.'],
@@ -135,7 +135,8 @@ const CH={
   sport:['SFIDA &middot; PREVEDI E VERIFICA','Dove finir&agrave;?','Prima di aggiungere una parola (<b>pallone, sudore, medaglia, stadio</b>&hellip;) scrivete dove pensate che finir&agrave; e a chi sar&agrave; pi&ugrave; vicina. Poi aggiungetela: chi ci ha preso?'],
   hobby:['SFIDA &middot; PREVEDI E VERIFICA','Dove finir&agrave;?','Aggiungete una parola a sorpresa (<b>pizza, Luna, robot, colla</b>&hellip;): a quale gruppo si avvicina? Siete d&rsquo;accordo con l&rsquo;IA? Dove secondo voi sbaglia?']
 };
-const COLORS=["#f472b6","#38bdf8","#facc15","#4ade80","#fb923c","#a78bfa"];
+const COLORS=["#f472b6","#38bdf8","#facc15","#4ade80","#fb923c","#a78bfa","#f87171","#2dd4bf","#c084fc","#fbbf24"];
+let ANCH=null; // le "calamite": se ci sono, i colori sono la calamita più vicina
 const $=id=>document.getElementById(id);
 const status=$("status"), inp=$("inp"), addBtn=$("add"), chips=$("chips"), legend=$("legend"), panel=$("panel"), chal=$("challenge"), cv=$("cv"), ctx=cv.getContext("2d");
 let ext=null; const cache=new Map();
@@ -180,12 +181,34 @@ function silhouette(V,cl){
     tot+=(b-a)/Math.max(a,b);});
   return tot/V.length;
 }
+function kmedoids(V,k){
+  const n=V.length, d=(i,j)=>1-dot(V[i],V[j]);
+  // primo centro: la parola più "tipica"; poi la più lontana da quelli già scelti
+  let c0=0,bm=-9; for(let i=0;i<n;i++){let m=0;for(let j=0;j<n;j++)m+=dot(V[i],V[j]);if(m>bm){bm=m;c0=i;}}
+  const med=[c0];
+  while(med.length<k){let bi=-1,bd=-1;for(let i=0;i<n;i++){if(med.includes(i))continue;const m=Math.min(...med.map(c=>d(i,c)));if(m>bd){bd=m;bi=i;}}med.push(bi);}
+  let g=new Array(n);
+  for(let it=0;it<8;it++){
+    for(let i=0;i<n;i++){let bc=0,bv=9;med.forEach((c,ci)=>{const x=d(i,c);if(x<bv){bv=x;bc=ci;}});g[i]=bc;}
+    let changed=false;
+    med.forEach((c,ci)=>{const mem=[...Array(n).keys()].filter(i=>g[i]===ci);if(!mem.length)return;
+      let bi=c,bs=9;mem.forEach(i=>{const t=mem.reduce((s2,j)=>s2+d(i,j),0);if(t<bs){bs=t;bi=i;}});if(bi!==c){med[ci]=bi;changed=true;}});
+    if(!changed)break;}
+  const cl=med.map((_,ci)=>[...Array(n).keys()].filter(i=>g[i]===ci)).filter(c=>c.length);
+  return cl;
+}
 function kgroups(V){
   const n=V.length; if(n<4)return V.map(()=>0);
   let best=null,bs=-9;
-  for(let k=2;k<=Math.min(4,n-1);k++){const cl=agg(V,k); if(k>2&&cl.some(c=>c.length<2))continue; const s=silhouette(V,cl); if(s>bs){bs=s;best=cl;}}
-  best.sort((a,b)=>Math.min(...a)-Math.min(...b));
+  for(let k=2;k<=Math.min(5,Math.floor(n/2));k++){const cl=kmedoids(V,k); if(cl.some(c=>c.length<2))continue; const s=silhouette(V,cl); if(s>bs){bs=s;best=cl;}}
+  if(!best) best=[[...Array(n).keys()]];
+  best.sort((a,b)=>b.length-a.length);
   const g=new Array(n);best.forEach((c,ci)=>c.forEach(i=>g[i]=ci));return g;
+}
+function anchorGroups(){
+  // ogni parola prende il colore della calamita più vicina (le calamite hanno il loro colore)
+  const idx=ANCH.map(a=>words.indexOf(a));
+  return words.map((w,i)=>{const own=idx.indexOf(i); if(own>=0)return own; let bc=0,bv=-9; idx.forEach((j,ci)=>{if(S[i][j]>bv){bv=S[i][j];bc=ci;}}); return bc;});
 }
 function groupNames(){
   const ng=Math.max(...groups)+1, names=[];
@@ -215,15 +238,16 @@ async function embed(list){
 }
 async function setWords(list){
   const nw=[...new Set(list.map(w=>w.trim().toLowerCase()).filter(Boolean))].slice(0,40);
-  if(!nw.length){words=[];vecs=[];P=[];S=[];groups=[];gNames=[];sel=-1;renderChips();renderPanel();return;}
+  if(!nw.length){words=[];vecs=[];P=[];S=[];groups=[];gNames=[];sel=-1;ANCH=null;renderChips();renderPanel();return;}
   status.innerHTML="Penso&hellip;";
   const nv=await embed(nw);
   const nS=nv.map(a=>nv.map(b=>dot(a,b)));
   let mn=2,mx=-2;for(let i=0;i<nS.length;i++)for(let j=i+1;j<nS.length;j++){mn=Math.min(mn,nS[i][j]);mx=Math.max(mx,nS[i][j]);}
   const nP=nw.length>=3?pca3(nv):nw.map((_,i)=>[i?0.6:-0.6,0,0]);
-  const nG=kgroups(nv);
-  words=nw;vecs=nv;S=nS;P=nP;groups=nG;SMIN=mn;SMAX=mx;sel=-1;
-  gNames=groupNames();
+  words=nw;vecs=nv;S=nS;P=nP;SMIN=mn;SMAX=mx;sel=-1;
+  if(ANCH && !ANCH.every(a=>nw.includes(a))) ANCH=null;
+  if(ANCH){ groups=anchorGroups(); gNames=ANCH.slice(); }
+  else { groups=kgroups(nv); gNames=groupNames(); }
   status.innerHTML="<b>"+words.length+" parole</b> nello spazio. Trascina per ruotare, tocca una parola.";
   renderChips(); renderPanel();
 }
@@ -232,8 +256,15 @@ async function addFromInput(){
   if(!add.length)return; inp.value="";
   addBtn.disabled=true; await setWords(words.concat(add)); addBtn.disabled=false; inp.focus();
   if(add.length===1){const i=words.indexOf(add[0].toLowerCase()); if(i>=0&&words.length>1){
-    let bj=-1,bs=-9; words.forEach((w,j)=>{if(j!==i&&S[i][j]>bs){bs=S[i][j];bj=j;}});
-    selectWord(i); showBanner("&#129522; &laquo;"+esc(words[i])+"&raquo; si attacca a &laquo;"+esc(words[bj])+"&raquo;");}}
+    let bj=-1,bs=-9; words.forEach((w,j)=>{if(j!==i&&(!ANCH||ANCH.includes(w))&&S[i][j]>bs){bs=S[i][j];bj=j;}});
+    selectWord(i);
+    if(ANCH){
+      const rank=ANCH.map(w=>[w,S[i][words.indexOf(w)]]).filter(x=>x[0]!==words[i]).sort((x,y)=>y[1]-x[1]);
+      const [a1,s1]=rank[0],[a2,s2]=rank[1]||["",-1];
+      if(s1<0.5) showBanner("&#127787;&#65039; &laquo;"+esc(words[i])+"&raquo; non si attacca a nessuna calamita: la pi&ugrave; vicina &egrave; &laquo;"+esc(a1)+"&raquo;, ma la attira poco");
+      else if(s1-s2<0.04) showBanner("&#9878;&#65039; &laquo;"+esc(words[i])+"&raquo; &egrave; conteso tra &laquo;"+esc(a1)+"&raquo; e &laquo;"+esc(a2)+"&raquo;");
+      else showBanner("&#129522; &laquo;"+esc(words[i])+"&raquo; si attacca a &laquo;"+esc(a1)+"&raquo;");
+    } else showBanner("&#129522; &laquo;"+esc(words[i])+"&raquo; si attacca a &laquo;"+esc(words[bj])+"&raquo;");}}
 }
 
 /* ---------- UI ---------- */
@@ -245,7 +276,8 @@ function renderChips(){
     c.onclick=()=>selectWord(i===sel?-1:i);
     c.querySelector("b").onclick=e=>{e.stopPropagation();setWords(words.filter((_,j)=>j!==i));};
     chips.appendChild(c);});
-  legend.innerHTML = words.length>=4 ? '<span>Colori = gruppi trovati dall&rsquo;IA:</span>'+gNames.map((g,ci)=>'<span><i style="background:'+COLORS[ci%COLORS.length]+'"></i>il gruppo di &laquo;'+esc(g)+'&raquo; ('+groups.filter(x=>x===ci).length+')</span>').join('') : '';
+  if(ANCH){ legend.innerHTML='<span>Ogni calamita ha il suo colore: le parole nuove prendono il colore della calamita pi&ugrave; vicina.</span>'; }
+  else legend.innerHTML = words.length>=4 ? '<span>Colori = gruppi trovati dall&rsquo;IA:</span>'+gNames.map((g,ci)=>'<span><i style="background:'+COLORS[ci%COLORS.length]+'"></i>il gruppo di &laquo;'+esc(g)+'&raquo; ('+groups.filter(x=>x===ci).length+')</span>').join('') : '';
 }
 const pct=x=>Math.round(Math.max(0,Math.min(1,rel(x)))*100);
 function bars(list){return list.map(([w,s,c])=>'<div class="row"><span class="w">'+esc(w)+'</span><span class="track"><span class="fill" style="width:'+pct(s)+'%;'+(c?'background:'+c:'')+'"></span></span><span class="n">'+pct(s)+'</span></div>').join("");}
@@ -289,7 +321,10 @@ function renderPanel(){
     const list=words.map((w,j)=>[w,S[sel][j],col(j)]).filter((_,j)=>j!==sel).sort((a,b)=>b[1]-a[1]);
     let html='<span class="pill">LE PI&Ugrave; VICINE A</span><h3>&laquo;'+esc(words[sel])+'&raquo;</h3>'+bars(list.slice(0,6));
     const ng=gNames.length;
-    if(ng>=2){
+    if(ANCH){
+      const aff=ANCH.map((a,ci)=>[a,S[sel][words.indexOf(a)],COLORS[ci%COLORS.length]]).filter(x=>x[0]!==words[sel]).sort((x,y)=>y[1]-x[1]);
+      html+='<h3 style="margin-top:12px">Quanto la tira ogni calamita</h3>'+bars(aff);
+    } else if(ng>=2){
       const aff=gNames.map((g,ci)=>{const mem=words.map((_,j)=>j).filter(j=>groups[j]===ci&&j!==sel); if(!mem.length)return [g,SMIN,COLORS[ci%COLORS.length]];
         return ["gruppo di "+g, mem.reduce((s,j)=>s+S[sel][j],0)/mem.length, COLORS[ci%COLORS.length]];});
       html+='<h3 style="margin-top:12px">Vicinanza ai gruppi</h3>'+bars(aff);
@@ -372,7 +407,7 @@ $("tRot").onclick=e=>{autoRot=!autoRot;e.target.classList.toggle("on",autoRot);}
 $("tAll").onclick=e=>{showAll=!showAll;e.target.classList.toggle("on",showAll);};
 addBtn.onclick=addFromInput;
 inp.addEventListener("keydown",e=>{if(e.key==="Enter")addFromInput();});
-document.querySelectorAll("button.pre").forEach(b=>b.onclick=async()=>{const p=b.dataset.p; if(p==="clear"){setChallenge("start");return setWords([]);} if(p==="gemelli"){setChallenge("gemelli");await setWords([]);inp.focus();return;} setChallenge(p); await setWords(PRESETS[p]);});
+document.querySelectorAll("button.pre").forEach(b=>b.onclick=async()=>{const p=b.dataset.p; if(p==="clear"){setChallenge("start");return setWords([]);} if(p==="gemelli"){setChallenge("gemelli");await setWords([]);inp.focus();return;} setChallenge(p); ANCH=(p==="calamita")?PRESETS[p].slice():null; await setWords(PRESETS[p]);});
 if(/embed/.test(location.search)){document.querySelectorAll(".kick,h1,.sub").forEach(e=>e.style.display="none");}
 setChallenge("start"); renderPanel();
 resize(); draw(); load();
